@@ -50,7 +50,6 @@ router.post('/login', async (req, res) => {
 // GET /api/users/ranking - 랭킹 조회
 router.get('/ranking', async (req, res) => {
     try {
-        // highScore를 기준으로 내림차순 정렬하고 상위 10명만 조회
         const topUsers = await User_1.default.find().sort({ highScore: -1 }).limit(10).select('username highScore');
         res.json(topUsers);
     }
