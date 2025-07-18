@@ -32,6 +32,8 @@ const io = new Server(server, {
 // 데이터베이스 연결
 const startServer = async () => {
   try {
+    console.log('🚀 Starting server...');
+    
     await connectDB();
     await initializeDatabase();
     
@@ -42,11 +44,29 @@ const startServer = async () => {
 
     // 헬스체크 엔드포인트
     app.get('/health', (req, res) => {
-      res.status(200).json({ 
-        status: 'OK', 
-        timestamp: new Date().toISOString(),
+      try {
+        res.status(200).json({ 
+          status: 'OK', 
+          timestamp: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'development',
+          database: 'Connected',
+          port: serverConfig.port
+        });
+      } catch (error) {
+        res.status(500).json({ 
+          status: 'ERROR', 
+          message: 'Health check failed',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
+    // 루트 엔드포인트
+    app.get('/', (req, res) => {
+      res.json({ 
+        message: 'Stealing Dance Game Server is running!',
         environment: process.env.NODE_ENV || 'development',
-        database: 'Connected'
+        timestamp: new Date().toISOString()
       });
     });
 
@@ -60,6 +80,7 @@ const startServer = async () => {
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 Database: Connected and ready`);
       console.log(`🔌 Socket.IO: Ready for connections`);
+      console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

@@ -31,6 +31,7 @@ const io = new socket_io_1.Server(server, {
 // 데이터베이스 연결
 const startServer = async () => {
     try {
+        console.log('🚀 Starting server...');
         await (0, connect_1.default)();
         await (0, init_1.default)();
         // 미들웨어 설정
@@ -39,11 +40,29 @@ const startServer = async () => {
         app.use('/api/users', user_1.default);
         // 헬스체크 엔드포인트
         app.get('/health', (req, res) => {
-            res.status(200).json({
-                status: 'OK',
-                timestamp: new Date().toISOString(),
+            try {
+                res.status(200).json({
+                    status: 'OK',
+                    timestamp: new Date().toISOString(),
+                    environment: process.env.NODE_ENV || 'development',
+                    database: 'Connected',
+                    port: config_1.server.port
+                });
+            }
+            catch (error) {
+                res.status(500).json({
+                    status: 'ERROR',
+                    message: 'Health check failed',
+                    error: error instanceof Error ? error.message : 'Unknown error'
+                });
+            }
+        });
+        // 루트 엔드포인트
+        app.get('/', (req, res) => {
+            res.json({
+                message: 'Stealing Dance Game Server is running!',
                 environment: process.env.NODE_ENV || 'development',
-                database: 'Connected'
+                timestamp: new Date().toISOString()
             });
         });
         // Socket.io 핸들러 초기화
@@ -55,6 +74,7 @@ const startServer = async () => {
             console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`📊 Database: Connected and ready`);
             console.log(`🔌 Socket.IO: Ready for connections`);
+            console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
         });
     }
     catch (error) {
