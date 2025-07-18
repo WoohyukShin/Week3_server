@@ -1,8 +1,10 @@
 interface DbConfig {
     uri: string;
+    name: string;
 }
 interface ServerConfig {
     port: string | number;
+    env: string;
 }
 interface JwtConfig {
     secret: string;

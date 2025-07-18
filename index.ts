@@ -5,8 +5,12 @@ import cors from 'cors';
 
 import { server as serverConfig } from './config/config';
 import connectDB from './db/connect';
+import initializeDatabase from './db/init';
 import userRouter from './routers/user';
 import initializeSocketHandlers from './handlers/sockethandlers';
+
+// 모델들을 명시적으로 import하여 스키마 등록
+import './db/models/User';
 
 const app = express();
 const server = http.createServer(app);
@@ -21,33 +25,46 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-// cors: corsOptions
 const io = new Server(server, {
-    cors: {
-        origin: "*", // 실제 프로덕션에서는 특정 도메인만 허용하도록 변경해야 합니다.
-        methods: ["GET", "POST"]
-    }
+  cors: corsOptions
 });
 
 // 데이터베이스 연결
-connectDB();
+const startServer = async () => {
+  try {
+    await connectDB();
+    await initializeDatabase();
+    
+    // 미들웨어 설정
+    app.use(cors(corsOptions));
+    app.use(express.json());
+    app.use('/api/users', userRouter);
 
-// 미들웨어 설정
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use('/api/users', userRouter);
+    // 헬스체크 엔드포인트
+    app.get('/health', (req, res) => {
+      res.status(200).json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        database: 'Connected'
+      });
+    });
 
-// 헬스체크 엔드포인트
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
-});
+    // Socket.io 핸들러 초기화
+    initializeSocketHandlers(io);
 
-// Socket.io 핸들러 초기화
-initializeSocketHandlers(io);
+    // 서버 시작
+    const PORT = Number(serverConfig.port) || 3001;
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📊 Database: Connected and ready`);
+      console.log(`🔌 Socket.IO: Ready for connections`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
 
-// 서버 시작
-const PORT = Number(serverConfig.port) || 3001;
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+startServer();
