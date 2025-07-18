@@ -37,7 +37,7 @@ router.post('/login', async (req: Request, res: Response) => {
     };
     const secret: Secret = jwtConfig.secret;
     const options: SignOptions = {
-      expiresIn: jwtConfig.expiresIn,
+      expiresIn: jwtConfig.expiresIn as any,
     };
     const token = jwt.sign(payload, secret, options);
 
