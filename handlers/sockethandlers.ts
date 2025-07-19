@@ -12,7 +12,7 @@ interface JoinRoomData {
 }
 
 interface PlayerActionData {
-  action: 'startDancing' | 'stopDancing' | 'push';
+  action: 'startDancing' | 'stopDancing' | 'move' | 'push';
   payload?: any;
 }
 
@@ -51,6 +51,12 @@ export default (io: Server): void => {
         const room = roomManager.getRoom(roomId);
         if (room && room.game) {
           room.game.handlePlayerAction(socket.id, data.action, data.payload);
+          // 다른 플레이어들에게 액션 전파
+          socket.to(roomId).emit('playerAction', {
+            socketId: socket.id,
+            action: data.action,
+            payload: data.payload
+          });
         }
       }
     });
@@ -62,6 +68,11 @@ export default (io: Server): void => {
         if (room && room.hostId === socket.id && !room.game) {
           room.startGame(io);
           io.to(roomId).emit('gameStarted', room.getState());
+          
+          // 게임 시작 시 모든 플레이어에게 로컬 플레이어 ID 설정
+          room.players.forEach(player => {
+            io.to(player.socketId).emit('setLocalPlayer', player.socketId);
+          });
         }
       }
     });
@@ -72,6 +83,27 @@ export default (io: Server): void => {
         const room = roomManager.getRoom(roomId);
         if (room) {
           socket.emit('roomState', room.getState());
+        }
+      }
+    });
+
+    socket.on('getGameState', () => {
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        const room = roomManager.getRoom(roomId);
+        if (room && room.game) {
+          socket.emit('gameStateUpdate', room.game.getGameState());
+        }
+      }
+    });
+
+    // 게임 관련 이벤트들
+    socket.on('gameStateUpdate', () => {
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        const room = roomManager.getRoom(roomId);
+        if (room && room.game) {
+          io.to(roomId).emit('gameStateUpdate', room.game.getGameState());
         }
       }
     });

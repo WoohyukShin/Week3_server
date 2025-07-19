@@ -9,7 +9,7 @@ export interface GameState {
   isManagerAppeared: boolean;
 }
 
-type PlayerAction = 'startDancing' | 'stopDancing' | 'push';
+type PlayerAction = 'startDancing' | 'stopDancing' | 'move' | 'push';
 
 class Game {
   roomId: string;

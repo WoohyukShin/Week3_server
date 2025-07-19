@@ -3,10 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwt = exports.server = exports.database = void 0;
 // 환경 구분
 const isProduction = process.env.NODE_ENV === 'production';
-// MongoDB URI 우선순위: MONGODB_URI > MONGODB_URL > 기본값
+// MongoDB URI 우선순위: MONGODB_URI > MONGO_URL > MONGODB_URL > 기본값
 const getMongoDBUri = () => {
     if (process.env.MONGODB_URI) {
         return process.env.MONGODB_URI;
+    }
+    if (process.env.MONGO_URL) {
+        return process.env.MONGO_URL;
     }
     if (process.env.MONGODB_URL) {
         return process.env.MONGODB_URL;
@@ -18,17 +21,19 @@ console.log('🔍 Environment Variables Debug:');
 console.log('  NODE_ENV:', process.env.NODE_ENV);
 console.log('  PORT:', process.env.PORT);
 console.log('  MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('  MONGO_URL exists:', !!process.env.MONGO_URL);
 console.log('  MONGODB_URL exists:', !!process.env.MONGODB_URL);
 console.log('  MONGODB_URI length:', process.env.MONGODB_URI?.length || 0);
+console.log('  MONGO_URL length:', process.env.MONGO_URL?.length || 0);
 console.log('  MONGODB_URL length:', process.env.MONGODB_URL?.length || 0);
 console.log('  Final URI length:', getMongoDBUri().length);
 console.log('  Final URI value:', getMongoDBUri());
 console.log('  JWT_SECRET exists:', !!process.env.JWT_SECRET);
 console.log('  Is Production:', isProduction);
 // 환경 변수 검증
-if (isProduction && !process.env.MONGODB_URI && !process.env.MONGODB_URL) {
-    console.error('❌ CRITICAL ERROR: Neither MONGODB_URI nor MONGODB_URL is set in production!');
-    console.error('Please set MONGODB_URI or MONGODB_URL environment variable in Railway dashboard.');
+if (isProduction && !process.env.MONGODB_URI && !process.env.MONGO_URL && !process.env.MONGODB_URL) {
+    console.error('❌ CRITICAL ERROR: No MongoDB URI found in production!');
+    console.error('Please set MONGODB_URI, MONGO_URL, or MONGODB_URL environment variable in Railway dashboard.');
     process.exit(1);
 }
 exports.database = {

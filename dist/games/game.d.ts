@@ -6,7 +6,7 @@ export interface GameState {
     players: PlayerInfo[];
     isManagerAppeared: boolean;
 }
-type PlayerAction = 'startDancing' | 'stopDancing' | 'push';
+type PlayerAction = 'startDancing' | 'stopDancing' | 'move' | 'push';
 declare class Game {
     roomId: string;
     players: Player[];
