@@ -17,12 +17,13 @@ const server = http.createServer(app);
 
 console.log('🚀 Starting server initialization...');
 
-// 모든 도메인 허용
+// 모든 도메인 허용 - 강화된 CORS 설정
 const corsOptions = {
   origin: '*', // 나중에 도메인으로 변경
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200
 };
 
 const io = new Server(server, {
@@ -43,9 +44,10 @@ const startServer = async () => {
     console.log('✅ Database initialized successfully');
     
     console.log('🔧 Setting up middleware...');
-    // 미들웨어 설정
+    
+    // CORS 미들웨어를 가장 먼저 설정
     app.use(cors(corsOptions));
-    app.use(express.json());
+    console.log('✅ CORS configured with origin: *');
     
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
@@ -57,6 +59,10 @@ const startServer = async () => {
       next();
     });
     
+    // JSON 파싱 미들웨어
+    app.use(express.json());
+    
+    // 라우터 설정
     app.use('/api/users', userRouter);
     console.log('✅ Middleware configured');
 
@@ -91,10 +97,8 @@ const startServer = async () => {
       });
     });
 
-    // 루트 엔드포인트는 위에서 이미 정의됨
 
     console.log('🔧 Setting up Socket.IO handlers...');
-    // Socket.io 핸들러 초기화
     initializeSocketHandlers(io);
     console.log('✅ Socket.IO handlers configured');
 
