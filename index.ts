@@ -46,6 +46,17 @@ const startServer = async () => {
     // 미들웨어 설정
     app.use(cors(corsOptions));
     app.use(express.json());
+    
+    // HTTP 요청 로그 미들웨어
+    app.use((req, res, next) => {
+      console.log(`📡 HTTP ${req.method} ${req.url} - ${new Date().toISOString()}`);
+      console.log(`📋 Headers:`, req.headers);
+      if (req.body && Object.keys(req.body).length > 0) {
+        console.log(`📦 Body:`, req.body);
+      }
+      next();
+    });
+    
     app.use('/api/users', userRouter);
     console.log('✅ Middleware configured');
 

@@ -8,14 +8,18 @@ const router: Router = express.Router();
 // GET /api/users/check-username/:username - 사용자명 중복확인
 router.get('/check-username/:username', async (req: Request, res: Response) => {
   const { username } = req.params;
+  console.log(`🔍 Checking username availability: ${username}`);
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
+      console.log(`❌ Username already exists: ${username}`);
       res.json({ available: false, message: '이미 사용 중인 사용자명입니다.' });
     } else {
+      console.log(`✅ Username available: ${username}`);
       res.json({ available: true, message: '사용 가능한 사용자명입니다.' });
     }
   } catch (error: any) {
+    console.log(`❌ Error checking username: ${error.message}`);
     res.status(500).json({ message: '서버 오류가 발생했습니다.', error: error.message });
   }
 });
@@ -23,14 +27,18 @@ router.get('/check-username/:username', async (req: Request, res: Response) => {
 // GET /api/users/check-nickname/:nickname - 닉네임 중복확인
 router.get('/check-nickname/:nickname', async (req: Request, res: Response) => {
   const { nickname } = req.params;
+  console.log(`🔍 Checking nickname availability: ${nickname}`);
   try {
     const existingUser = await User.findOne({ nickname });
     if (existingUser) {
+      console.log(`❌ Nickname already exists: ${nickname}`);
       res.json({ available: false, message: '이미 사용 중인 닉네임입니다.' });
     } else {
+      console.log(`✅ Nickname available: ${nickname}`);
       res.json({ available: true, message: '사용 가능한 닉네임입니다.' });
     }
   } catch (error: any) {
+    console.log(`❌ Error checking nickname: ${error.message}`);
     res.status(500).json({ message: '서버 오류가 발생했습니다.', error: error.message });
   }
 });
