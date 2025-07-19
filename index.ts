@@ -119,10 +119,10 @@ const startServer = async () => {
 
 
     console.log('🔧 Setting up Socket.IO handlers...');
-    initializeSocketHandlers(io);
+initializeSocketHandlers(io);
     console.log('✅ Socket.IO handlers configured');
 
-    // 서버 시작
+// 서버 시작
     const PORT = Number(serverConfig.port) || 3001;
     console.log(`🌐 Starting server on port ${PORT}...`);
     

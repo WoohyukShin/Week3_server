@@ -48,13 +48,13 @@ class Game {
   handleManagerEvent(): void {
     if (Math.random() < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY && !this.isManagerAppeared) {
       this.isManagerAppeared = true;
+      console.log('🚨 Manager appeared! Setting isManagerAppeared = true');
       this.broadcast('managerAppeared', {});
 
       setTimeout(() => {
+        console.log('⏰ Manager timeout - killing players and setting isManagerAppeared = false');
         this.killPlayers();
       }, GAME_CONSTANTS.MANAGER_KILL_DELAY_MS);
-    } else {
-      this.isManagerAppeared = false;
     }
   }
 
@@ -66,6 +66,7 @@ class Game {
       }
     });
     this.isManagerAppeared = false;
+    console.log('💀 Manager killed players and set isManagerAppeared = false');
   }
 
   updatePlayerGauges(player: Player): void {
@@ -156,11 +157,13 @@ class Game {
   }
 
   getGameState(): GameState {
-    return {
+    const gameState = {
       roomId: this.roomId,
       players: this.players.map(p => p.getInfo()),
       isManagerAppeared: this.isManagerAppeared,
     };
+    console.log(`📊 Broadcasting GameState - isManagerAppeared: ${this.isManagerAppeared}, Players: ${this.players.length}`);
+    return gameState;
   }
 }
 

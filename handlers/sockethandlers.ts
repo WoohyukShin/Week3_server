@@ -106,17 +106,6 @@ export default (io: Server): void => {
       }
     });
 
-    // 게임 관련 이벤트들
-    socket.on('gameStateUpdate', () => {
-      const roomId = playerRoomMap.get(socket.id);
-      if (roomId) {
-        const room = roomManager.getRoom(roomId);
-        if (room && room.game) {
-          io.to(roomId).emit('gameStateUpdate', room.game.getGameState());
-        }
-      }
-    });
-
     socket.on('disconnect', () => {
       console.log(`🔌 Client disconnected: ${socket.id} - ${new Date().toISOString()}`);
       const roomId = playerRoomMap.get(socket.id);
