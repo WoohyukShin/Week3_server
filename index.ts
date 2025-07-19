@@ -17,11 +17,9 @@ const server = http.createServer(app);
 
 console.log('🚀 Starting server initialization...');
 
-// CORS 설정
+// 모든 도메인 허용
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.railway.app'] // 실제 프론트엔드 도메인으로 변경
-    : ['http://localhost:5173', 'http://localhost:5174', 'http://192.168.35.96:5173', 'http://192.168.35.96:5174'],
+  origin: '*', // 나중에 도메인으로 변경
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
