@@ -47,6 +47,26 @@ const startServer = async () => {
     
     // CORS 미들웨어를 가장 먼저 설정
     app.use(cors(corsOptions));
+    
+    // 추가 CORS 헤더 설정 - 더 강력한 버전
+    app.use((req, res, next) => {
+      // 모든 도메인 허용
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+      res.header('Access-Control-Allow-Headers', '*');
+      res.header('Access-Control-Expose-Headers', '*');
+      res.header('Access-Control-Allow-Credentials', 'false');
+      res.header('Access-Control-Max-Age', '86400');
+      
+      // OPTIONS 요청 처리
+      if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+      }
+      
+      next();
+    });
+    
     console.log('✅ CORS configured with origin: *');
     
     // HTTP 요청 로그 미들웨어
