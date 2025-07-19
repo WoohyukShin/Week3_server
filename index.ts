@@ -81,14 +81,17 @@ const startServer = async () => {
       }
     });
 
-    // 루트 엔드포인트
+    // 루트 경로도 헬스체크로 사용
     app.get('/', (req, res) => {
-      res.json({ 
+      res.status(200).json({ 
         message: 'Stealing Dance Game Server is running!',
         environment: process.env.NODE_ENV || 'development',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: 'OK'
       });
     });
+
+    // 루트 엔드포인트는 위에서 이미 정의됨
 
     console.log('🔧 Setting up Socket.IO handlers...');
     // Socket.io 핸들러 초기화
