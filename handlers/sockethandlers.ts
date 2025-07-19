@@ -101,7 +101,10 @@ export default (io: Server): void => {
       if (roomId) {
         const room = roomManager.getRoom(roomId);
         if (room && room.game) {
+          // 게임 상태와 함께 로컬 플레이어 ID도 설정
+          socket.emit('setLocalPlayer', socket.id);
           socket.emit('gameStateUpdate', room.game.getGameState());
+          console.log(`📊 GameState sent to ${socket.id} in room ${roomId}`);
         }
       }
     });

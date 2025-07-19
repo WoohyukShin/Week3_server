@@ -29,5 +29,5 @@ export const PUSH_SUCCESS_BASE_RATE: number = 0.2; // commit 1회당 성공 확�
 export const MANAGER_APPEARANCE_PROBABILITY: number = 0.03; // 매 틱마다 운영진이 등장할 확률 3%
 
 // 모션 시간
-export const MANAGER_KILL_DELAY_MS = 400; // 운영진 모션 시간
+export const MANAGER_KILL_DELAY_MS = 600; // 운영진 모션 시간
 export const PUSH_ANIMATION_DURATION_MS = 500; // PUSH 모션 시간
