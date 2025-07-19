@@ -46,7 +46,11 @@ class Game {
   }
 
   handleManagerEvent(): void {
-    if (Math.random() < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY && !this.isManagerAppeared) {
+    const randomValue = Math.random();
+    const shouldAppear = randomValue < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY;
+    console.log(`🎲 Manager check: random=${randomValue.toFixed(3)}, threshold=${GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY}, shouldAppear=${shouldAppear}, isManagerAppeared=${this.isManagerAppeared}`);
+    
+    if (shouldAppear && !this.isManagerAppeared) {
       this.isManagerAppeared = true;
       console.log('🚨 Manager appeared! Setting isManagerAppeared = true');
       this.broadcast('managerAppeared', {});

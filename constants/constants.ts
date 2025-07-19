@@ -18,7 +18,7 @@ export const FLOW_GAUGE_PENALTY_THRESHOLD: number = 50;
 export const FLOW_GAUGE_DECREASE_PER_SECOND: number = 10; // 초당 몰입 게이지 감소량
 export const FLOW_GAUGE_DECREASE_PER_TICK: number = FLOW_GAUGE_DECREASE_PER_SECOND / TICKS_PER_SECOND ;
 
-export const FLOW_GAUGE_INCREASE_PER_SECOND: number = 10; // 춤 출때 초당 몰입 게이지 증가량
+export const FLOW_GAUGE_INCREASE_PER_SECOND: number = 20; // 춤 출때 초당 몰입 게이지 증가량
 export const FLOW_GAUGE_INCREASE_PER_TICK: number = FLOW_GAUGE_INCREASE_PER_SECOND / TICKS_PER_SECOND;
 
 // Push Mechanics
