@@ -70,19 +70,26 @@ class Game {
 
   updatePlayerGauges(player: Player): void {
     if (player.isDancing) {
+      const oldFlow = player.flowGauge;
       player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
+      console.log(`💃 [${player.username}] Dancing - Flow: ${oldFlow} → ${player.flowGauge} (+${GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK})`);
     } else {
+      const oldFlow = player.flowGauge;
       player.flowGauge = Math.max(0, player.flowGauge - GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK);
+      console.log(`😴 [${player.username}] Not dancing - Flow: ${oldFlow} → ${player.flowGauge} (-${GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK})`);
 
       let commitIncrease = GAME_CONSTANTS.COMMIT_GAUGE_PER_TICK;
       if (player.flowGauge < GAME_CONSTANTS.FLOW_GAUGE_PENALTY_THRESHOLD) {
         commitIncrease /= 2;
       }
+      const oldCommit = player.commitGauge;
       player.commitGauge += commitIncrease;
+      console.log(`📝 [${player.username}] Commit: ${oldCommit} → ${player.commitGauge} (+${commitIncrease})`);
 
       if (player.commitGauge >= GAME_CONSTANTS.MAX_COMMIT_GAUGE) {
         player.commitGauge = 0;
         player.commitCount++;
+        console.log(`🎉 [${player.username}] Commit success! Count: ${player.commitCount}`);
         this.broadcast('commitSuccess', { socketId: player.socketId, commitCount: player.commitCount });
       }
     }
