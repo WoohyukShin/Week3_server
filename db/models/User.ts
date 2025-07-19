@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 export interface IUser extends Document {
   username: string;
   password: string;
+  nickname: string;
   highScore: number;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -25,6 +26,13 @@ const UserSchema: Schema<IUser> = new Schema({
     type: String,
     required: [true, 'Password is required'],
     minlength: 6,
+  },
+  nickname: {
+    type: String,
+    required: [true, 'Nickname is required'],
+    unique: true,
+    trim: true,
+    minlength: 2,
   },
   highScore: {
     type: Number,

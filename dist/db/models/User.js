@@ -51,6 +51,13 @@ const UserSchema = new mongoose_1.Schema({
         required: [true, 'Password is required'],
         minlength: 6,
     },
+    nickname: {
+        type: String,
+        required: [true, 'Nickname is required'],
+        unique: true,
+        trim: true,
+        minlength: 2,
+    },
     highScore: {
         type: Number,
         default: 0,
