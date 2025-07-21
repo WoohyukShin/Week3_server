@@ -42,7 +42,7 @@ const corsOptions = {
 */
 const corsOptions = {
   origin: allowedOrigins,
-  credentials: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   optionsSuccessStatus: 200
 };
