@@ -26,6 +26,7 @@ const initializeDatabase = async (): Promise<void> => {
       await User.create({
         username: 'admin',
         password: 'admin123',
+        nickname: 'admin',
         highScore: 0
       });
       console.log('✅ Default admin user created');
