@@ -67,14 +67,6 @@ class Room {
     this.game.start();
   }
 
-  // 방의 모든 플레이어에게 메시지를 전송
-  broadcast(event: string, data: any): void { // not used?
-    this.players.forEach(player => {
-      // io.to(player.socketId).emit(event, data);
-      // 실제 emit은 RoomManager나 핸들러에서 io 객체를 받아 처리합니다.
-    });
-  }
-
   // 방의 현재 상태를 반환
   getState(): RoomState {
     return {
@@ -85,23 +77,19 @@ class Room {
     };
   }
 
-  // 게임 시작 시 skillReadySet 초기화
+  // 모든 player가 스킬 설명을 읽고 OK 버튼을 눌렀는가 ?
   resetSkillReady() {
     this.skillReadySet.clear();
   }
-
   setSkillReady(socketId: string) {
     this.skillReadySet.add(socketId);
   }
-
   getSkillReadyCount(): number {
     return this.skillReadySet.size;
   }
-
   getTotalPlayerCount(): number {
     return this.players.size;
   }
-
   isAllSkillReady(): boolean {
     return this.skillReadySet.size === this.players.size;
   }

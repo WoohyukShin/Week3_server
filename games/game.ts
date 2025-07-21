@@ -33,15 +33,17 @@ class Game {
     console.log(`🎮 Game.start() called for room: ${this.roomId}`);
     // 모든 플레이어에게 무조건 bumpercar 스킬 할당
     this.players.forEach(player => {
-      // bumpercar 스킬만 강제로 할당
+      // Skill 랜덤으로 할당하고 (지금은 범퍼카만) skillAssigned 이벤트 발생
       const SkillClass = SkillManager.skills.get('bumpercar');
       if (SkillClass) {
         player.skill = new SkillClass(player);
         // 각 플레이어에게 스킬 이름을 개별적으로 알림
         this.io.to(player.socketId).emit('skillAssigned', { skill: 'bumpercar' });
+        console.log(`[DEBUG] game.ts.start : skillAssigned sent to ${player.username} (${player.socketId}): bumpercar`);
       } else {
         player.skill = null;
         this.io.to(player.socketId).emit('skillAssigned', { skill: null });
+        console.log(`[DEBUG] game.ts.start : skillAssigned sent to ${player.username} (${player.socketId}): null`);
       }
     });
     // skillReadySet 초기화
@@ -50,6 +52,10 @@ class Game {
       room.resetSkillReady();
     }
     this.broadcast('gameStarted', this.getGameState());
+  }
+
+  // 모든 플레이어가 OK(ready) 누르면 진짜 게임 시작
+  startGameLoop(): void {
     this.gameInterval = setInterval(() => this.tick(), GAME_CONSTANTS.GAME_TICK_INTERVAL);
     console.log(`⏰ Game interval started for room: ${this.roomId}, tick interval: ${GAME_CONSTANTS.GAME_TICK_INTERVAL}ms`);
   }

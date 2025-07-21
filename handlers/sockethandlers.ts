@@ -101,7 +101,6 @@ export default (io: Server): void => {
       if (roomId) {
         const room = roomManager.getRoom(roomId);
         if (room && room.game) {
-          // 게임 상태와 함께 로컬 플레이어 ID도 설정
           socket.emit('setLocalPlayer', socket.id);
           socket.emit('gameStateUpdate', room.game.getGameState());
           console.log(`📊 GameState sent to ${socket.id} in room ${roomId}`);
@@ -109,7 +108,7 @@ export default (io: Server): void => {
       }
     });
 
-    // OK(ready) 버튼 관련 skillReady 이벤트 처리
+    // 모든 플레이어가 Skill 설명창을 읽고 OK를 누름.
     socket.on('skillReady', () => {
       const roomId = playerRoomMap.get(socket.id);
       if (roomId) {
@@ -122,6 +121,9 @@ export default (io: Server): void => {
           });
           if (room.isAllSkillReady()) {
             io.to(roomId).emit('allSkillReady');
+            if (room.game) {
+              room.game.startGameLoop();
+            }
           }
         }
       }
