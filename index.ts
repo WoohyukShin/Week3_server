@@ -21,8 +21,8 @@ console.log('🚀 Starting server initialization...');
 const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = isProduction
   ? [
-      'http://143.248.184.29:5173',
-      'https://143.248.184.29:5173',
+      'http://143.248.184.29:5174',
+      'https://143.248.184.29:5174',
       'http://localhost:5173',
       'https://week3client-production.up.railway.app',
       // 실제 프론트 배포 도메인 추가
@@ -30,7 +30,7 @@ const allowedOrigins = isProduction
   : true;
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
