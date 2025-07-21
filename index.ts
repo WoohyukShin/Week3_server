@@ -56,21 +56,7 @@ const startServer = async () => {
     
     console.log('🔧 Setting up middleware...');
     
-    // CORS 헤더를 직접 추가하는 미들웨어 (가장 먼저 선언)
-    app.use((req, res, next) => {
-      const origin = req.headers.origin;
-      if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-      }
-      if (req.method === 'OPTIONS') {
-        return res.sendStatus(204);
-      }
-      next();
-    });
+    // CORS 헤더 추가.. 아니 왜 안 됨???
     app.use(cors(corsOptions))
     
     // HTTP 요청 로그 미들웨어
