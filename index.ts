@@ -17,20 +17,9 @@ const server = http.createServer(app);
 
 console.log('🚀 Starting server initialization...');
 
-// 환경에 따라 CORS 옵션 분기
-const isProduction = process.env.NODE_ENV === 'production';
-const allowedOrigins = isProduction
-  ? [
-      'http://143.248.184.29:5174',
-      'https://143.248.184.29:5174',
-      'http://localhost:5174',
-      'https://week3client-production.up.railway.app',
-      // 실제 프론트 배포 도메인 추가
-    ]
-  : true;
-
+// 모든 도메인 허용 - 강화된 CORS 설정
 const corsOptions = {
-  origin: '*',
+  origin: '*', // 나중에 도메인으로 변경
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -56,29 +45,29 @@ const startServer = async () => {
     
     console.log('🔧 Setting up middleware...');
     
-    // CORS 헤더를 모든 요청에 대해 가장 먼저 강제 적용 (특히 OPTIONS)
+    // CORS 미들웨어를 가장 먼저 설정
+    app.use(cors(corsOptions));
+    
+    // 추가 CORS 헤더 설정 - 더 강력한 버전
     app.use((req, res, next) => {
-      const origin = req.headers.origin;
-      if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-      }
+      // 모든 도메인 허용
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+      res.header('Access-Control-Allow-Headers', '*');
+      res.header('Access-Control-Expose-Headers', '*');
+      res.header('Access-Control-Allow-Credentials', 'false');
+      res.header('Access-Control-Max-Age', '86400');
+      
+      // OPTIONS 요청 처리
       if (req.method === 'OPTIONS') {
-        res.writeHead(200, {
-          'Access-Control-Allow-Origin': origin || '*',
-          'Access-Control-Allow-Credentials': 'true',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
-          'Vary': 'Origin'
-        });
-        res.end();
+        res.status(200).end();
         return;
       }
+      
       next();
     });
+    
+    console.log('✅ CORS configured with origin: *');
     
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
@@ -87,37 +76,6 @@ const startServer = async () => {
       if (req.body && Object.keys(req.body).length > 0) {
         console.log(`📦 Body:`, req.body);
       }
-      next();
-    });
-    
-    // 상세 HTTP 요청/응답 로깅 미들웨어 (개발/디버깅용)
-    app.use(async (req, res, next) => {
-      console.log('======== HEADER ========');
-      console.log(req.method, req.url);
-      console.log(req.headers);
-      console.log('========= BODY =========');
-      if (req.body && Object.keys(req.body).length > 0) {
-        console.log(req.body);
-      } else {
-        console.log('(empty)');
-      }
-      // 응답 로깅을 위해 res.send를 감싼다
-      const oldSend = res.send;
-      res.send = function (body) {
-        console.log('======= RESPONSE =======');
-        // 응답 헤더
-        console.log(res.getHeaders());
-        // 응답 바디
-        try {
-          const parsed = typeof body === 'string' ? JSON.parse(body) : body;
-          console.log(parsed);
-        } catch {
-          console.log(body);
-        }
-        console.log('========================');
-        // 원래 send 호출
-        return oldSend.call(this, body);
-      };
       next();
     });
     
@@ -176,6 +134,13 @@ initializeSocketHandlers(io);
       console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
       console.log(`📡 Server ready to accept connections!`);
     });
+
+    // 서버 에러 핸들링
+    server.on('error', (error) => {
+      console.error('❌ Server error:', error);
+      process.exit(1);
+    });
+
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     console.error('❌ Error details:', {
@@ -199,4 +164,3 @@ process.on('unhandledRejection', (reason, promise) => {
 
 console.log('🚀 Starting server...');
 startServer();
-  
