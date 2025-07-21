@@ -23,23 +23,7 @@ const allowedOrigins = [
   'https://week3client-production.up.railway.app',
   // 실제 배포 프론트 도메인 추가
 ];
-/*
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    console.log('🔧 CORS origin:', origin);
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'), false);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  optionsSuccessStatus: 200
-};
-*/
+
 const corsOptions = {
   origin: allowedOrigins,
   credentials: false,
@@ -48,18 +32,11 @@ const corsOptions = {
 };
 const app = express();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
-
+app.use(cors(corsOptions))
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: corsOptions
 });
-
 console.log('🚀 Starting server initialization...');
 
 // 데이터베이스 연결
