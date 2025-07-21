@@ -30,7 +30,7 @@ const allowedOrigins = isProduction
   : true;
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -56,7 +56,7 @@ const startServer = async () => {
     
     console.log('🔧 Setting up middleware...');
     
-    // CORS 헤더 추가.. 아니 왜 안 됨???
+    // CORS 헤더를 모든 요청에 대해 가장 먼저 강제 적용 (특히 OPTIONS)
     app.use((req, res, next) => {
       const origin = req.headers.origin;
       if (origin) {
@@ -67,7 +67,14 @@ const startServer = async () => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
       }
       if (req.method === 'OPTIONS') {
-        res.status(200).end(); // 204 대신 200으로 응답
+        res.writeHead(200, {
+          'Access-Control-Allow-Origin': origin || '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
+          'Vary': 'Origin'
+        });
+        res.end();
         return;
       }
       next();
