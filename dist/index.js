@@ -15,6 +15,10 @@ const sockethandlers_1 = __importDefault(require("./handlers/sockethandlers"));
 // 모델들을 명시적으로 import하여 스키마 등록
 require("./db/models/User");
 const allowedOrigins = [
+    'http://143.248.184.29:5173',
+    'http://192.168.35.3:5173',
+    'http://143.248.184.29:5174',
+    'http://192.168.35.3:5174',
     'http://localhost:5175',
     'http://127.0.0.1:5175',
     'http://143.248.184.29:5175',
