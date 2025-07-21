@@ -37,10 +37,6 @@ class bumpercar extends Skill {
             socketId: this.owner.socketId
           });
         }
-        // 게이지 업데이트 브로드캐스트 (불필요하므로 제거)
-        // if (this.owner.game && this.owner.game.broadcast) {
-        //   this.owner.game.broadcast('gameStateUpdate', this.owner.game.getGameState());
-        // }
       }
     }, 3000);
   }

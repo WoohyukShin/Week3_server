@@ -37,6 +37,7 @@ class SkillManager {
         console.error(`Failed to load skill from ${file}:`, err);
       }
     }
+    console.log('SkillManager loaded skills:', Array.from(this.skills.keys()));
   }
 
   /**
