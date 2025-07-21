@@ -6,9 +6,15 @@ export declare class RoomManager {
     rooms: Map<string, Room>;
     constructor(io: Server);
     createRoom(hostPlayer: Player): Room;
+    broadcastRoomList(): void;
     joinRoom(roomId: string, player: Player): Room;
     leaveRoom(roomId: string, socketId: string): void;
     getRoom(roomId: string): Room | undefined;
+    getRoomList(): {
+        roomId: string;
+        roomName: string;
+        host: string;
+    }[];
     generateRoomId(): string;
 }
 declare const getRoomManager: (io: Server) => RoomManager;

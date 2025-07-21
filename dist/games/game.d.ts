@@ -16,6 +16,7 @@ declare class Game {
     roomManager: RoomManager;
     constructor(roomId: string, players: Player[], io: Server, roomManager: RoomManager);
     start(): void;
+    startGameLoop(): void;
     tick(): void;
     handleManagerEvent(): void;
     killPlayers(): void;
@@ -25,6 +26,7 @@ declare class Game {
     endGame(winner: Player | null): void;
     handlePlayerAction(socketId: string, action: PlayerAction, data: any): void;
     handlePush(player: Player): void;
+    handleSkillUse(socketId: string): void;
     broadcast(event: string, data: any): void;
     getGameState(): GameState;
 }

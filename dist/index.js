@@ -14,22 +14,42 @@ const user_1 = __importDefault(require("./routers/user"));
 const sockethandlers_1 = __importDefault(require("./handlers/sockethandlers"));
 // 모델들을 명시적으로 import하여 스키마 등록
 require("./db/models/User");
-const app = (0, express_1.default)();
-const server = http_1.default.createServer(app);
-console.log('🚀 Starting server initialization...');
-// CORS 설정
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://143.248.184.29:5173',
+    'http://143.248.184.29:5174',
+    'http://192.168.35.3:5174',
+    'https://week3client-production.up.railway.app', // 살려주세요
+];
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production'
-        ? ['https://your-frontend-domain.railway.app'] // 실제 프론트엔드 도메인으로 변경
-        : ['http://localhost:5173', 'http://localhost:5174', 'http://192.168.35.96:5173', 'http://192.168.35.96:5174'],
+    origin: (origin, callback) => {
+        console.log(origin);
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    optionsSuccessStatus: 200,
 };
-const io = new socket_io_1.Server(server, {
-    cors: corsOptions
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)(corsOptions));
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+    }
+    next();
 });
-console.log('🔧 CORS and Socket.IO configured');
+const server = http_1.default.createServer(app);
+const io = new socket_io_1.Server(server, { cors: corsOptions });
 // 데이터베이스 연결
 const startServer = async () => {
     try {
@@ -40,13 +60,22 @@ const startServer = async () => {
         await (0, init_1.default)();
         console.log('✅ Database initialized successfully');
         console.log('🔧 Setting up middleware...');
-        // 미들웨어 설정
-        app.use((0, cors_1.default)(corsOptions));
+        // HTTP 요청 로그 미들웨어
+        app.use((req, res, next) => {
+            console.log(`📡 HTTP ${req.method} ${req.url} - ${new Date().toISOString()}`);
+            console.log(`📋 Headers:`, req.headers);
+            if (req.body && Object.keys(req.body).length > 0) {
+                console.log(`📦 Body:`, req.body);
+            }
+            next();
+        });
+        // JSON 파싱 미들웨어
         app.use(express_1.default.json());
-        app.use('/api/users', user_1.default);
+        // 라우터 설정
+        app.use('/api/users', (0, cors_1.default)(corsOptions), user_1.default);
         console.log('✅ Middleware configured');
         // 헬스체크 엔드포인트
-        app.get('/health', (req, res) => {
+        app.get('/health', (0, cors_1.default)(corsOptions), (req, res) => {
             try {
                 console.log('🏥 Health check requested');
                 res.status(200).json({
@@ -66,16 +95,16 @@ const startServer = async () => {
                 });
             }
         });
-        // 루트 엔드포인트
+        // 루트 경로도 헬스체크로 사용
         app.get('/', (req, res) => {
-            res.json({
+            res.status(200).json({
                 message: 'Stealing Dance Game Server is running!',
                 environment: process.env.NODE_ENV || 'development',
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                status: 'OK'
             });
         });
         console.log('🔧 Setting up Socket.IO handlers...');
-        // Socket.io 핸들러 초기화
         (0, sockethandlers_1.default)(io);
         console.log('✅ Socket.IO handlers configured');
         // 서버 시작

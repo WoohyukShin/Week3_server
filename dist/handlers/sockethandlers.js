@@ -9,15 +9,18 @@ const playerRoomMap = new Map();
 exports.default = (io) => {
     const roomManager = (0, RoomManager_1.default)(io);
     const handleConnection = (socket) => {
-        console.log(`New client connected: ${socket.id}`);
+        console.log(`🔌 New client connected: ${socket.id} - ${new Date().toISOString()}`);
         socket.on('createRoom', ({ username }) => {
+            console.log(`🏠 Socket ${socket.id} creating room for user: ${username}`);
             const player = new player_1.default(socket.id, username);
             const room = roomManager.createRoom(player);
             socket.join(room.roomId);
             playerRoomMap.set(socket.id, room.roomId);
             socket.emit('roomCreated', room.getState());
+            console.log(`✅ Room created: ${room.roomId} by ${username}`);
         });
         socket.on('joinRoom', ({ roomId, username }) => {
+            console.log(`🚪 Socket ${socket.id} joining room: ${roomId} as ${username}`);
             try {
                 const player = new player_1.default(socket.id, username);
                 const room = roomManager.joinRoom(roomId, player);
@@ -25,12 +28,19 @@ exports.default = (io) => {
                 playerRoomMap.set(socket.id, roomId);
                 socket.emit('joinedRoom', room.getState());
                 io.to(roomId).emit('playerJoined', room.getState());
+                console.log(`✅ ${username} joined room: ${roomId}`);
             }
             catch (error) {
+                console.log(`❌ Failed to join room: ${error.message}`);
                 socket.emit('error', { message: error.message });
             }
         });
+        socket.on('getRoomList', () => {
+            const rooms = roomManager.getRoomList(); // roomId, roomName, host 포함한 배열
+            socket.emit('roomList', rooms);
+        });
         socket.on('playerAction', (data) => {
+            console.log(`🎮 Socket ${socket.id} action: ${data.action}`, data.payload || '');
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
@@ -42,10 +52,12 @@ exports.default = (io) => {
                         action: data.action,
                         payload: data.payload
                     });
+                    console.log(`📡 Action broadcasted to room: ${roomId}`);
                 }
             }
         });
         socket.on('startGame', () => {
+            console.log(`🎯 Socket ${socket.id} starting game`);
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
@@ -56,6 +68,7 @@ exports.default = (io) => {
                     room.players.forEach(player => {
                         io.to(player.socketId).emit('setLocalPlayer', player.socketId);
                     });
+                    console.log(`🎮 Game started in room: ${roomId}`);
                 }
             }
         });
@@ -73,27 +86,50 @@ exports.default = (io) => {
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
                 if (room && room.game) {
+                    socket.emit('setLocalPlayer', socket.id);
                     socket.emit('gameStateUpdate', room.game.getGameState());
+                    console.log(`📊 GameState sent to ${socket.id} in room ${roomId}`);
                 }
             }
         });
-        // 게임 관련 이벤트들
-        socket.on('gameStateUpdate', () => {
+        // 모든 플레이어가 Skill 설명창을 읽고 OK를 누름.
+        socket.on('skillReady', () => {
+            const roomId = playerRoomMap.get(socket.id);
+            if (roomId) {
+                const room = roomManager.getRoom(roomId);
+                if (room) {
+                    room.setSkillReady(socket.id);
+                    io.to(roomId).emit('skillReadyCount', {
+                        ready: room.getSkillReadyCount(),
+                        total: room.getTotalPlayerCount(),
+                    });
+                    if (room.isAllSkillReady()) {
+                        io.to(roomId).emit('allSkillReady');
+                        if (room.game) {
+                            room.game.startGameLoop();
+                        }
+                    }
+                }
+            }
+        });
+        // 스킬 사용 이벤트
+        socket.on('skillUse', () => {
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
                 if (room && room.game) {
-                    io.to(roomId).emit('gameStateUpdate', room.game.getGameState());
+                    room.game.handleSkillUse(socket.id);
                 }
             }
         });
         socket.on('disconnect', () => {
-            console.log(`Client disconnected: ${socket.id}`);
+            console.log(`🔌 Client disconnected: ${socket.id} - ${new Date().toISOString()}`);
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 roomManager.leaveRoom(roomId, socket.id);
                 playerRoomMap.delete(socket.id);
                 io.to(roomId).emit('playerLeft', { socketId: socket.id });
+                console.log(`👋 Player left room: ${roomId}`);
             }
         });
     };

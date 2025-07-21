@@ -30,6 +30,7 @@ class SkillManager {
                 console.error(`Failed to load skill from ${file}:`, err);
             }
         }
+        console.log('SkillManager loaded skills:', Array.from(this.skills.keys()));
     }
     /**
        플레이어에게 랜덤 스킬을 생성하여 부여합니다.

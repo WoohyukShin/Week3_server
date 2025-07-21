@@ -12,6 +12,7 @@ class Room {
         this.hostId = hostPlayer.socketId;
         this.game = null; // 게임이 시작되면 Game 인스턴스가 할당됩니다.
         this.roomManager = roomManager;
+        this.skillReadySet = new Set();
         this.addPlayer(hostPlayer);
     }
     addPlayer(player) {
@@ -46,13 +47,6 @@ class Room {
         this.game = new game_1.default(this.roomId, Array.from(this.players.values()), io, this.roomManager);
         this.game.start();
     }
-    // 방의 모든 플레이어에게 메시지를 전송
-    broadcast(event, data) {
-        this.players.forEach(player => {
-            // io.to(player.socketId).emit(event, data);
-            // 실제 emit은 RoomManager나 핸들러에서 io 객체를 받아 처리합니다.
-        });
-    }
     // 방의 현재 상태를 반환
     getState() {
         return {
@@ -61,6 +55,22 @@ class Room {
             players: Array.from(this.players.values()).map(p => p.getInfo()),
             isGameStarted: !!this.game,
         };
+    }
+    // 모든 player가 스킬 설명을 읽고 OK 버튼을 눌렀는가 ?
+    resetSkillReady() {
+        this.skillReadySet.clear();
+    }
+    setSkillReady(socketId) {
+        this.skillReadySet.add(socketId);
+    }
+    getSkillReadyCount() {
+        return this.skillReadySet.size;
+    }
+    getTotalPlayerCount() {
+        return this.players.size;
+    }
+    isAllSkillReady() {
+        return this.skillReadySet.size === this.players.size;
     }
 }
 exports.default = Room;

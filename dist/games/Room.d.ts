@@ -14,6 +14,7 @@ declare class Room {
     hostId: string;
     game: Game | null;
     roomManager: RoomManager;
+    skillReadySet: Set<string>;
     constructor(roomId: string, hostPlayer: Player, roomManager: RoomManager);
     addPlayer(player: Player): void;
     removePlayer(socketId: string): void;
@@ -21,8 +22,12 @@ declare class Room {
     isFull(): boolean;
     isEmpty(): boolean;
     startGame(io: Server): void;
-    broadcast(event: string, data: any): void;
     getState(): RoomState;
+    resetSkillReady(): void;
+    setSkillReady(socketId: string): void;
+    getSkillReadyCount(): number;
+    getTotalPlayerCount(): number;
+    isAllSkillReady(): boolean;
 }
 export default Room;
 //# sourceMappingURL=Room.d.ts.map
