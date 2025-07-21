@@ -17,9 +17,26 @@ const server = http.createServer(app);
 
 console.log('🚀 Starting server initialization...');
 
-// 모든 도메인 허용 - 강화된 CORS 설정
+// 환경에 따라 CORS 옵션 분기
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigins = isProduction
+  ? [
+      'http://143.248.184.29:5173',
+      'https://143.248.184.29:5173',
+      'https://week3client-production.up.railway.app',
+      'https://your-frontend-domain.com', // 필요시 실제 배포 도메인 추가
+    ]
+  : [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://192.168.35.96:5173',
+      'http://192.168.35.96:5174',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+    ];
+
 const corsOptions = {
-  origin: '*', // 나중에 도메인으로 변경
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -47,27 +64,8 @@ const startServer = async () => {
     
     // CORS 미들웨어를 가장 먼저 설정
     app.use(cors(corsOptions));
-    
-    // 추가 CORS 헤더 설정 - 더 강력한 버전
-    app.use((req, res, next) => {
-      // 모든 도메인 허용
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-      res.header('Access-Control-Allow-Headers', '*');
-      res.header('Access-Control-Expose-Headers', '*');
-      res.header('Access-Control-Allow-Credentials', 'false');
-      res.header('Access-Control-Max-Age', '86400');
-      
-      // OPTIONS 요청 처리
-      if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-      }
-      
-      next();
-    });
-    
-    console.log('✅ CORS configured with origin: *');
+
+    // (불필요한 커스텀 CORS 헤더 미들웨어 제거)
     
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
