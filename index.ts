@@ -23,7 +23,7 @@ const allowedOrigins = [
   'https://week3client-production.up.railway.app',
   // 실제 배포 프론트 도메인 추가
 ];
-
+/*
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     console.log('🔧 CORS origin:', origin);
@@ -39,7 +39,14 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   optionsSuccessStatus: 200
 };
-
+*/
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200
+};
 const app = express();
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
