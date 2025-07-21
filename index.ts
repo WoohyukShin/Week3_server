@@ -20,12 +20,12 @@ const allowedOrigins = [
   'http://143.248.184.29:5173',
   'http://143.248.184.29:5174',
   'http://192.168.35.3:5174',
-  'https://week3client-production.up.railway.app:8080', // 살려주세요
+  'https://week3client-production.up.railway.app', // 살려주세요
 ];
 
 const corsOptions = {
   origin: allowedOrigins,
-  credentials: false,
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   optionsSuccessStatus: 200
 };
