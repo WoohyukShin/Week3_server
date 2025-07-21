@@ -28,11 +28,7 @@ export class RoomManager {
     
     // 방에 있는 모든 사람에게 새로운 플레이어 정보 전파
     this.io.to(roomId).emit('playerJoined', room.getState());
-    
-    // 방이 꽉 찼으면 게임 시작
-    if (room.isFull()) {
-      room.startGame(this.io);
-    }
+
     return room;
   }
 
@@ -62,7 +58,6 @@ export class RoomManager {
   }
 }
 
-// RoomManager를 싱글톤으로 만들기 위해 인스턴스를 내보냅니다.
 let instance: RoomManager | null = null;
 
 const getRoomManager = (io: Server): RoomManager => {

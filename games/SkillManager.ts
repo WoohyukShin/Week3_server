@@ -3,7 +3,6 @@ import path from 'path';
 import Player from './player';
 import { Skill } from './Skill';
 
-// new 키워드로 호출 가능한 Skill 클래스의 생성자 타입을 정의합니다.
 type SkillClass = new (owner: Player) => Skill;
 
 class SkillManager {
