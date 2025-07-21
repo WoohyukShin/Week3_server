@@ -37,14 +37,6 @@ const corsOptions = {
 const app = express();
 
 app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  const origin:string = req.headers.origin as string;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  next();
-});
 const server = http.createServer(app);
 const io = new Server(server, {cors: corsOptions});
 

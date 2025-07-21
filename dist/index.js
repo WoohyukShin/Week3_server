@@ -15,13 +15,10 @@ const sockethandlers_1 = __importDefault(require("./handlers/sockethandlers"));
 // 모델들을 명시적으로 import하여 스키마 등록
 require("./db/models/User");
 const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174',
-    'http://143.248.184.29:5173',
-    'http://143.248.184.29:5174',
-    'http://192.168.35.3:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5175',
+    'http://143.248.184.29:5175',
+    'http://192.168.35.3:5175',
     'https://week3client-production.up.railway.app', // 살려주세요
 ];
 const corsOptions = {
@@ -40,14 +37,6 @@ const corsOptions = {
 };
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)(corsOptions));
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.header('Access-Control-Allow-Origin', origin);
-        res.header('Access-Control-Allow-Credentials', 'true');
-    }
-    next();
-});
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, { cors: corsOptions });
 // 데이터베이스 연결
