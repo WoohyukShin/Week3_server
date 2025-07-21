@@ -19,6 +19,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5174',
   'http://143.248.184.29:5173',
   'http://143.248.184.29:5174',
+  'http://192.168.35.3:5174',
   'https://week3client-production.up.railway.app',
   // 실제 배포 프론트 도메인 추가
 ];
@@ -39,8 +40,8 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors());
+app.options('*', cors());
 
 const server = http.createServer(app);
 const io = new Server(server, {
