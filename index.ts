@@ -71,6 +71,7 @@ const startServer = async () => {
       }
       next();
     });
+    app.use(cors(corsOptions))
     
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
