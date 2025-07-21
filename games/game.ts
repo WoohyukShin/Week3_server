@@ -29,11 +29,14 @@ class Game {
   }
 
   start(): void {
+    console.log(`🎮 Game.start() called for room: ${this.roomId}`);
     this.broadcast('gameStarted', this.getGameState());
     this.gameInterval = setInterval(() => this.tick(), GAME_CONSTANTS.GAME_TICK_INTERVAL);
+    console.log(`⏰ Game interval started for room: ${this.roomId}, tick interval: ${GAME_CONSTANTS.GAME_TICK_INTERVAL}ms`);
   }
 
   tick(): void {
+    console.log(`🔄 Tick called for room: ${this.roomId}, isManagerAppeared: ${this.isManagerAppeared}`);
     this.handleManagerEvent();
     this.players.forEach(player => {
       if (!player.isAlive) return;
