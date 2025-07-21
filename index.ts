@@ -26,6 +26,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    console.log('🔧 CORS origin:', origin);
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -40,8 +41,8 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(cors());
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 const server = http.createServer(app);
 const io = new Server(server, {
