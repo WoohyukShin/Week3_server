@@ -64,7 +64,7 @@ const startServer = async () => {
     
     // CORS 미들웨어를 가장 먼저 설정
     app.use(cors(corsOptions));
-
+    app.options('*', cors(corsOptions));
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
       console.log(`📡 HTTP ${req.method} ${req.url} - ${new Date().toISOString()}`);
