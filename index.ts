@@ -19,7 +19,7 @@ console.log('🚀 Starting server initialization...');
 
 // 모든 도메인 허용 - 강화된 CORS 설정
 const corsOptions = {
-  origin: '*', // 나중에 도메인으로 변경
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
