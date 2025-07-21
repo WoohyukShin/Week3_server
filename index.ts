@@ -24,18 +24,24 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: (origin:any, callback:any) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
+
 const app = express();
 
 app.use(cors(corsOptions))
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: corsOptions
-});
+const io = new Server(server, {cors: corsOptions});
+
 console.log('🚀 Starting server initialization...');
 
 // 데이터베이스 연결
