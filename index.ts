@@ -36,7 +36,7 @@ const allowedOrigins = isProduction
     ];
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: true, // allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -65,8 +65,6 @@ const startServer = async () => {
     // CORS 미들웨어를 가장 먼저 설정
     app.use(cors(corsOptions));
 
-    // (불필요한 커스텀 CORS 헤더 미들웨어 제거)
-    
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
       console.log(`📡 HTTP ${req.method} ${req.url} - ${new Date().toISOString()}`);
