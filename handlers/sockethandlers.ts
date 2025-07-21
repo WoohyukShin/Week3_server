@@ -109,6 +109,35 @@ export default (io: Server): void => {
       }
     });
 
+    // OK(ready) 버튼 관련 skillReady 이벤트 처리
+    socket.on('skillReady', () => {
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        const room = roomManager.getRoom(roomId);
+        if (room) {
+          room.setSkillReady(socket.id);
+          io.to(roomId).emit('skillReadyCount', {
+            ready: room.getSkillReadyCount(),
+            total: room.getTotalPlayerCount(),
+          });
+          if (room.isAllSkillReady()) {
+            io.to(roomId).emit('allSkillReady');
+          }
+        }
+      }
+    });
+
+    // 스킬 사용 이벤트
+    socket.on('skillUse', () => {
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        const room = roomManager.getRoom(roomId);
+        if (room && room.game) {
+          room.game.handleSkillUse(socket.id);
+        }
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log(`🔌 Client disconnected: ${socket.id} - ${new Date().toISOString()}`);
       const roomId = playerRoomMap.get(socket.id);

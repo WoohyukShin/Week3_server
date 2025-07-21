@@ -31,3 +31,6 @@ export const MANAGER_APPEARANCE_PROBABILITY: number = 0.03; // 매 틱마다 운
 // 모션 시간
 export const MANAGER_KILL_DELAY_MS = 600; // 운영진 모션 시간
 export const PUSH_ANIMATION_DURATION_MS = 500; // PUSH 모션 시간
+
+// 스킬 밸런스
+export const BUMPERCAR_FLOW_GAUGE_DECREASE_RATE: number = 0.7; // 범퍼카 스킬 사용 시 몰입 게이지 감소 비율

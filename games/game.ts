@@ -2,6 +2,7 @@ import * as GAME_CONSTANTS from '../constants/constants';
 import Player, { PlayerInfo } from './player';
 import { RoomManager } from './RoomManager';
 import { Server } from 'socket.io';
+import SkillManager from './SkillManager';
 
 export interface GameState {
   roomId: string;
@@ -30,6 +31,24 @@ class Game {
 
   start(): void {
     console.log(`🎮 Game.start() called for room: ${this.roomId}`);
+    // 모든 플레이어에게 무조건 bumpercar 스킬 할당
+    this.players.forEach(player => {
+      // bumpercar 스킬만 강제로 할당
+      const SkillClass = SkillManager.skills.get('bumpercar');
+      if (SkillClass) {
+        player.skill = new SkillClass(player);
+        // 각 플레이어에게 스킬 이름을 개별적으로 알림
+        this.io.to(player.socketId).emit('skillAssigned', { skill: 'bumpercar' });
+      } else {
+        player.skill = null;
+        this.io.to(player.socketId).emit('skillAssigned', { skill: null });
+      }
+    });
+    // skillReadySet 초기화
+    const room = this.roomManager.getRoom(this.roomId);
+    if (room) {
+      room.resetSkillReady();
+    }
     this.broadcast('gameStarted', this.getGameState());
     this.gameInterval = setInterval(() => this.tick(), GAME_CONSTANTS.GAME_TICK_INTERVAL);
     console.log(`⏰ Game interval started for room: ${this.roomId}, tick interval: ${GAME_CONSTANTS.GAME_TICK_INTERVAL}ms`);
@@ -156,6 +175,17 @@ class Game {
     } else {
       player.commitCount = 0;
       this.broadcast('pushFailed', { socketId: player.socketId });
+    }
+  }
+
+  handleSkillUse(socketId: string): void {
+    const player = this.players.find(p => p.socketId === socketId);
+    if (player && player.skill) {
+      console.log(`[SKILL] ${player.username} uses skill: ${player.skill.name}`);
+      player.skill.execute(this.players);
+      // 여기에 broadcast 추가??
+    } else {
+      console.log(`[SKILL] Player ${socketId} tried to use skill, but has none.`);
     }
   }
 

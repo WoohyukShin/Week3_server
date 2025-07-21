@@ -17,6 +17,7 @@ class Room {
   hostId: string;
   game: Game | null;
   roomManager: RoomManager;
+  skillReadySet: Set<string>;
 
   constructor(roomId: string, hostPlayer: Player, roomManager: RoomManager) {
     this.roomId = roomId;
@@ -24,7 +25,7 @@ class Room {
     this.hostId = hostPlayer.socketId;
     this.game = null; // 게임이 시작되면 Game 인스턴스가 할당됩니다.
     this.roomManager = roomManager;
-
+    this.skillReadySet = new Set();
     this.addPlayer(hostPlayer);
   }
 
@@ -82,6 +83,27 @@ class Room {
       players: Array.from(this.players.values()).map(p => p.getInfo()),
       isGameStarted: !!this.game,
     };
+  }
+
+  // 게임 시작 시 skillReadySet 초기화
+  resetSkillReady() {
+    this.skillReadySet.clear();
+  }
+
+  setSkillReady(socketId: string) {
+    this.skillReadySet.add(socketId);
+  }
+
+  getSkillReadyCount(): number {
+    return this.skillReadySet.size;
+  }
+
+  getTotalPlayerCount(): number {
+    return this.players.size;
+  }
+
+  isAllSkillReady(): boolean {
+    return this.skillReadySet.size === this.players.size;
   }
 }
 
