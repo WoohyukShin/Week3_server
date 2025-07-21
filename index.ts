@@ -13,13 +13,10 @@ import initializeSocketHandlers from './handlers/sockethandlers';
 import './db/models/User';
 
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-  'http://143.248.184.29:5173',
-  'http://143.248.184.29:5174',
-  'http://192.168.35.3:5174',
+  'http://localhost:5175',
+  'http://127.0.0.1:5175',
+  'http://143.248.184.29:5175',
+  'http://192.168.35.3:5175',
   'https://week3client-production.up.railway.app', // 살려주세요
 ];
 
