@@ -97,7 +97,7 @@ const startServer = async () => {
         (0, sockethandlers_1.default)(io);
         console.log('✅ Socket.IO handlers configured');
         // 서버 시작
-        const PORT = Number(config_1.server.port) || 3001;
+        const PORT = Number(process.env.PORT) || Number(config_1.server.port) || 3001;
         console.log(`🌐 Starting server on port ${PORT}...`);
         server.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Server is running on port ${PORT}`);

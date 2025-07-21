@@ -107,7 +107,7 @@ initializeSocketHandlers(io);
     console.log('✅ Socket.IO handlers configured');
 
 // 서버 시작
-    const PORT = Number(serverConfig.port) || 3001;
+    const PORT = Number(process.env.PORT) || Number(serverConfig.port) || 3001;
     console.log(`🌐 Starting server on port ${PORT}...`);
     
     server.listen(PORT, '0.0.0.0', () => {
