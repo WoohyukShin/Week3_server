@@ -50,6 +50,13 @@ export default (io: Server): void => {
       }
     });
 
+    socket.on('getRoomList', () => {
+  const rooms = roomManager.getRoomList(); // roomId, roomName, host 포함한 배열
+  socket.emit('roomList', rooms);
+});
+
+
+
     socket.on('playerAction', (data: PlayerActionData) => {
       console.log(`🎮 Socket ${socket.id} action: ${data.action}`, data.payload || '');
       const roomId = playerRoomMap.get(socket.id);

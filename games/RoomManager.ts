@@ -12,12 +12,24 @@ export class RoomManager {
   }
 
   createRoom(hostPlayer: Player): Room {
-    const roomId = this.generateRoomId();
-    const room = new Room(roomId, hostPlayer, this);
-    this.rooms.set(roomId, room);
-    console.log(`Room created: ${roomId} by ${hostPlayer.username}`);
-    return room;
-  }
+  const roomId = this.generateRoomId();
+  const room = new Room(roomId, hostPlayer, this);
+  this.rooms.set(roomId, room);
+  console.log(`Room created: ${roomId} by ${hostPlayer.username}`);
+  
+  this.broadcastRoomList();
+  return room;
+}
+
+
+  broadcastRoomList() {
+  const roomList = Array.from(this.rooms.entries()).map(([roomId, room]) => ({
+    roomId,
+    roomName: room.getState().players[0]?.username || '이름 없음',
+    host: room.getState().hostId,
+  }));
+  this.io.emit('roomList', roomList); // 모든 클라이언트에 전송
+}
 
   joinRoom(roomId: string, player: Player): Room {
     const room = this.rooms.get(roomId);
@@ -50,11 +62,20 @@ export class RoomManager {
         this.io.to(roomId).emit('playerLeft', room.getState());
       }
     }
+    this.broadcastRoomList();
   }
 
   getRoom(roomId: string): Room | undefined {
     return this.rooms.get(roomId);
   }
+
+  getRoomList() {
+  return Array.from(this.rooms.entries()).map(([roomId, room]) => ({
+    roomId,
+    roomName: room.getState().players[0]?.username || '이름 없음',
+    host: room.getState().hostId,
+  }));
+}
 
   // 간단한 랜덤 ID 생성기
   generateRoomId(): string {
