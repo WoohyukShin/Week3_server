@@ -38,11 +38,17 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  const origin:string = req.headers.origin as string;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  next();
+});
 const server = http.createServer(app);
 const io = new Server(server, {cors: corsOptions});
-
-console.log('🚀 Starting server initialization...');
 
 // 데이터베이스 연결
 const startServer = async () => {
@@ -71,11 +77,11 @@ const startServer = async () => {
     app.use(express.json());
     
     // 라우터 설정
-    app.use('/api/users', userRouter);
+    app.use('/api/users', cors(corsOptions), userRouter);
     console.log('✅ Middleware configured');
 
     // 헬스체크 엔드포인트
-    app.get('/health', (req, res) => {
+    app.get('/health', cors(corsOptions), (req, res) => {
       try {
         console.log('🏥 Health check requested');
         res.status(200).json({ 
