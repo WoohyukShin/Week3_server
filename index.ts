@@ -23,14 +23,14 @@ const allowedOrigins = isProduction
   ? [
       'http://143.248.184.29:5174',
       'https://143.248.184.29:5174',
-      'http://localhost:5173',
+      'http://localhost:5174',
       'https://week3client-production.up.railway.app',
       // 실제 프론트 배포 도메인 추가
     ]
   : true;
 
 const corsOptions = {
-  origin: true,
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -57,7 +57,21 @@ const startServer = async () => {
     console.log('🔧 Setting up middleware...');
     
     // CORS 헤더 추가.. 아니 왜 안 됨???
-    app.use(cors(corsOptions))
+    app.use((req, res, next) => {
+      const origin = req.headers.origin;
+      if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      }
+      if (req.method === 'OPTIONS') {
+        res.status(200).end(); // 204 대신 200으로 응답
+        return;
+      }
+      next();
+    });
     
     // HTTP 요청 로그 미들웨어
     app.use((req, res, next) => {
@@ -155,13 +169,6 @@ initializeSocketHandlers(io);
       console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
       console.log(`📡 Server ready to accept connections!`);
     });
-
-    // 서버 에러 핸들링
-    server.on('error', (error) => {
-      console.error('❌ Server error:', error);
-      process.exit(1);
-    });
-
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     console.error('❌ Error details:', {
@@ -185,3 +192,4 @@ process.on('unhandledRejection', (reason, promise) => {
 
 console.log('🚀 Starting server...');
 startServer();
+  
