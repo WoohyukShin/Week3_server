@@ -23,20 +23,14 @@ const allowedOrigins = isProduction
   ? [
       'http://143.248.184.29:5173',
       'https://143.248.184.29:5173',
-      'https://week3client-production.up.railway.app',
-      'https://your-frontend-domain.com', // 필요시 실제 배포 도메인 추가
-    ]
-  : [
       'http://localhost:5173',
-      'http://localhost:5174',
-      'http://192.168.35.96:5173',
-      'http://192.168.35.96:5174',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:5174',
-    ];
+      'https://week3client-production.up.railway.app',
+      // 실제 프론트 배포 도메인 추가
+    ]
+  : true;
 
 const corsOptions = {
-  origin: true, // allowedOrigins,
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -72,6 +66,37 @@ const startServer = async () => {
       if (req.body && Object.keys(req.body).length > 0) {
         console.log(`📦 Body:`, req.body);
       }
+      next();
+    });
+    
+    // 상세 HTTP 요청/응답 로깅 미들웨어 (개발/디버깅용)
+    app.use(async (req, res, next) => {
+      console.log('======== HEADER ========');
+      console.log(req.method, req.url);
+      console.log(req.headers);
+      console.log('========= BODY =========');
+      if (req.body && Object.keys(req.body).length > 0) {
+        console.log(req.body);
+      } else {
+        console.log('(empty)');
+      }
+      // 응답 로깅을 위해 res.send를 감싼다
+      const oldSend = res.send;
+      res.send = function (body) {
+        console.log('======= RESPONSE =======');
+        // 응답 헤더
+        console.log(res.getHeaders());
+        // 응답 바디
+        try {
+          const parsed = typeof body === 'string' ? JSON.parse(body) : body;
+          console.log(parsed);
+        } catch {
+          console.log(body);
+        }
+        console.log('========================');
+        // 원래 send 호출
+        return oldSend.call(this, body);
+      };
       next();
     });
     
