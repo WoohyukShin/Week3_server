@@ -13,6 +13,7 @@ declare class Room {
     players: Map<string, Player>;
     hostId: string;
     game: Game | null;
+    startTime?: number;
     roomManager: RoomManager;
     skillReadySet: Set<string>;
     gameReadySet?: Set<string>;

@@ -1,4 +1,4 @@
-import { INITIAL_COMMIT_GAUGE, INITIAL_FLOW_GAUGE } from '../constants/constants';
+import { INITIAL_FLOW_GAUGE } from '../constants/constants';
 import { Skill } from './Skill';
 
 // getInfo 메소드가 반환하는 객체의 타입을 정의합니다.
@@ -6,14 +6,9 @@ export interface PlayerInfo {
   socketId: string;
   username: string;
   isAlive: boolean;
-  isDancing: boolean;
-  commitGauge: number;
+  playerMotion: string;
   flowGauge: number;
-  commitCount: number;
   skill: string | null;
-  bumpercar: boolean;
-  isExercising: boolean;
-  hasCaffeine: boolean;
   muscleCount: number;
 }
 
@@ -23,17 +18,11 @@ class Player {
   username: string;
   // 운영진 관리
   isAlive: boolean;
-  isDancing: boolean;
+  playerMotion: string; // 'coding' | 'dancing' | 'bumpercar' | 'exercise' | 'coffee'
   // 몰입 & COMMIT 게이지
-  commitGauge: number;
   flowGauge: number;
-  commitCount: number;
   // SKILLS
   skill: Skill | null;
-  bumpercar: boolean; // 범퍼카?
-  isExercising: boolean; // 운동 중?
-  playingGame: boolean; // 게임 중?
-  hasCaffeine: boolean; // 커피 마심
   muscleGauge: number; // 운동 게이지
   muscleCount: number; // 근육량
   game?: any; // skills에서 game 프로퍼티 접근을 위한 타입 선언
@@ -42,15 +31,9 @@ class Player {
     this.socketId = socketId;
     this.username = username;
     this.isAlive = true;
-    this.isDancing = false;
-    this.commitGauge = INITIAL_COMMIT_GAUGE;
+    this.playerMotion = 'coding';
     this.flowGauge = INITIAL_FLOW_GAUGE;
-    this.commitCount = 0;
     this.skill = null;
-    this.bumpercar = false;
-    this.isExercising = false;
-    this.playingGame = false;
-    this.hasCaffeine = false;
     this.muscleGauge = 0;
     this.muscleCount = 0;
   }
@@ -61,17 +44,11 @@ class Player {
       socketId: this.socketId,
       username: this.username,
       isAlive: this.isAlive,
-      isDancing: this.isDancing,
-      commitGauge: this.commitGauge,
+      playerMotion: this.playerMotion,
       flowGauge: this.flowGauge,
-      commitCount: this.commitCount,
       skill: this.skill ? this.skill.name : null,
-      bumpercar: this.bumpercar,
-      isExercising: this.isExercising,
-      hasCaffeine: this.hasCaffeine,
       muscleCount: this.muscleCount,
     };
-    console.log('[Player.getInfo] this.skill:', this.skill, 'this.skill?.name:', this.skill ? this.skill.name : null, 'info:', info);
     return info;
   }
 }

@@ -1,5 +1,6 @@
 import { Skill } from '../Skill';
 import Player from '../player';
+import * as GAME_CONSTANTS from '../../constants/constants';
 
 export default class Exercise extends Skill {
   constructor(owner: Player) {
@@ -11,6 +12,17 @@ export default class Exercise extends Skill {
 
   execute(): void {
     this.onUse();
-    this.owner.isExercising = true;
+    this.owner.playerMotion = 'exercise';
+    setTimeout(() => {
+      if (this.owner.isAlive) {
+        this.owner.playerMotion = 'coding';
+        this.owner.muscleCount = this.owner.muscleCount + 1;
+        if (this.owner.muscleCount >= GAME_CONSTANTS.MUSCLE_TO_WIN) {
+          this.owner.game.broadcast('gameEnded', {
+            winner: this.owner.socketId
+          });
+        }
+      }
+    }, GAME_CONSTANTS.EXERCISE_TIME_MS);
   }
 } 

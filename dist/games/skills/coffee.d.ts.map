@@ -1,1 +1,1 @@
-{"version":3,"file":"coffee.d.ts","sourceRoot":"","sources":["../../../games/skills/coffee.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,UAAU,CAAC;AACjC,OAAO,MAAM,MAAM,WAAW,CAAC;AAE/B,MAAM,CAAC,OAAO,OAAO,MAAO,SAAQ,KAAK;gBAC3B,KAAK,EAAE,MAAM;IAOzB,OAAO,IAAI,IAAI;CAOhB"}
+{"version":3,"file":"coffee.d.ts","sourceRoot":"","sources":["../../../games/skills/coffee.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,UAAU,CAAC;AACjC,OAAO,MAAM,MAAM,WAAW,CAAC;AAG/B,MAAM,CAAC,OAAO,OAAO,MAAO,SAAQ,KAAK;gBAC3B,KAAK,EAAE,MAAM;IAOzB,OAAO,IAAI,IAAI;CAQhB"}

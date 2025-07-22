@@ -18,15 +18,15 @@ declare class Game {
     start(): void;
     startGameLoop(): void;
     tick(): void;
-    handleManagerEvent(): void;
+    handleManagerEvent(forceAppear?: boolean): void;
     killPlayers(): void;
     updatePlayerGauges(player: Player): void;
     checkPlayerStatus(player: Player): void;
     checkEndCondition(): void;
     endGame(winner: Player | null): void;
     handlePlayerAction(socketId: string, action: PlayerAction, data: any): void;
-    handlePush(player: Player): void;
     handleSkillUse(socketId: string): void;
+    handleAnimationComplete(socketId: string, type: string): void;
     broadcast(event: string, data: any): void;
     getGameState(): GameState;
 }

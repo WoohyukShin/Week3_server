@@ -32,11 +32,11 @@ class Game {
   start(): void {
     console.log(`🎮 Game.start() called for room: ${this.roomId}`);
     this.players.forEach(player => {
-      const SkillClass = SkillManager.skills.get('bumpercar');
-      if (SkillClass) {
-        player.skill = new SkillClass(player);
-        this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill?.name || null });
-      }
+      // 랜덤 스킬 할당
+      const skillInstance = SkillManager.assignRandomSkill(player);
+      player.skill = skillInstance;
+      this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
+      console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
     });
     const room = this.roomManager.getRoom(this.roomId);
     if (room) room.resetSkillReady();
@@ -59,9 +59,13 @@ class Game {
     this.checkEndCondition();
   }
 
-  handleManagerEvent(): void {
+  handleManagerEvent(forceAppear: boolean = false): void {
     const randomValue = Math.random();
-    const shouldAppear = randomValue < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY;
+    var shouldAppear = randomValue < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY;
+    if (forceAppear) {
+      shouldAppear = true;
+      return;
+    }
     if (shouldAppear && !this.isManagerAppeared) {
       this.isManagerAppeared = true;
       this.broadcast('managerAppeared', {});
@@ -71,27 +75,25 @@ class Game {
 
   killPlayers(): void {
     this.players.forEach(player => {
-      if (player.isDancing) {
+      if (player.playerMotion == 'dancing' || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
         player.isAlive = false;
-        this.broadcast('playerDied', { socketId: player.socketId, reason: 'dancing' });
+        this.broadcast('playerDied', { socketId: player.socketId, reason: 'Manager' });
       }
     });
     this.isManagerAppeared = false;
   }
 
   updatePlayerGauges(player: Player): void {
-    if (player.isDancing) {
-      player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
+    if (player.playerMotion === 'dancing') { // dancing일 때 몰입 게이지 증가
+      player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + 
+        GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
+    } else if (player.playerMotion === 'gaming') { // gaming일 때 몰입 게이지 덜 증가
+      player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + 
+        GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK * GAME_CONSTANTS.GAME_FLOW_GAUGE_RATE);
+    } else if ((player as any).isFlowProtedted || player.playerMotion !== 'coding') {
+      return; // 커피 버프 중 or 운동, 노래 부를 때는 몰입 게이지 변화 없음
     } else {
       player.flowGauge = Math.max(0, player.flowGauge - GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK);
-      let commitIncrease = GAME_CONSTANTS.COMMIT_GAUGE_PER_TICK;
-      if (player.flowGauge < GAME_CONSTANTS.FLOW_GAUGE_PENALTY_THRESHOLD) commitIncrease /= 2;
-      player.commitGauge += commitIncrease;
-      if (player.commitGauge >= GAME_CONSTANTS.MAX_COMMIT_GAUGE) {
-        player.commitGauge = 0;
-        player.commitCount++;
-        this.broadcast('commitSuccess', { socketId: player.socketId, commitCount: player.commitCount });
-      }
     }
   }
 
@@ -115,34 +117,37 @@ class Game {
     const totalTimeMs = endTime - (room?.startTime ?? endTime);
     const formattedTime = `${Math.floor(totalTimeMs / 60000).toString().padStart(2, '0')}:${Math.floor((totalTimeMs % 60000) / 1000).toString().padStart(2, '0')}`;
 
-    this.players.forEach(player => {
-      const resultData = {
-        winnerSocketId: winner?.socketId || '',
-        commitCount: player.commitCount,
-        skill: player.skill?.name || '',
-        time: formattedTime,
-      };
-      this.io.to(player.socketId).emit('gameEnded', resultData);
-    });
+  this.players.forEach((player) => {
+    const resultData = {
+      winnerSocketId: winner?.socketId ?? '',
+      skill: player.skill?.name || '',
+      time: formattedTime,
+    };
+    this.io.to(player.socketId).emit('gameEnded', resultData);
+    console.log(`[Game.endGame] Sent gameEnded to ${player.username}`, resultData);
+  });
+
+  if (this.roomManager) {
+    this.roomManager.rooms.delete(this.roomId);
+    console.log(`[${this.roomId}] Room deleted after game ended`);
   }
+}
 
   handlePlayerAction(socketId: string, action: PlayerAction, data: any): void {
     const player = this.players.find(p => p.socketId === socketId);
     if (!player || !player.isAlive) return;
     switch (action) {
       case 'startDancing':
-        player.isDancing = true;
+        player.playerMotion = 'dancing';
         break;
       case 'stopDancing':
-        player.isDancing = false;
+        player.playerMotion = 'coding';
         break;
-      case 'push':
-        this.broadcast('pushStarted', { socketId: player.socketId });
-        setTimeout(() => this.handlePush(player), GAME_CONSTANTS.PUSH_ANIMATION_DURATION_MS);
-        break;
+      // push 관련 case 삭제
     }
   }
 
+  /*
   handlePush(player: Player): void {
     const successRate = player.commitCount * GAME_CONSTANTS.PUSH_SUCCESS_BASE_RATE;
     if (Math.random() < successRate) {
@@ -152,11 +157,25 @@ class Game {
       this.broadcast('pushFailed', { socketId: player.socketId });
     }
   }
+*/
 
   handleSkillUse(socketId: string): void {
     const player = this.players.find(p => p.socketId === socketId);
     if (player && player.skill) {
       player.skill.execute(this.players);
+    }
+  }
+
+  // animationComplete 이벤트 처리
+  handleAnimationComplete(socketId: string, type: string): void {
+    const player = this.players.find(p => p.socketId === socketId);
+    if (!player) return;
+    if (type === 'coffee') {
+      player.playerMotion = 'coding';
+    } else if (type === 'shotgun') {
+      player.playerMotion = 'coding';
+      this.isManagerAppeared = true;
+      this.broadcast('managerAppeared', {});
     }
   }
 

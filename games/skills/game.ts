@@ -17,7 +17,7 @@ export default class GameSkill extends Skill {
     (this.owner as any).playingGame = true;
     setTimeout(() => {
       (this.owner as any).playingGame = false;
-    }, 2000);
+    }, GAME_CONSTANTS.GAME_TIME_MS);
     this.usesLeft--;
     this.onUse();
   }

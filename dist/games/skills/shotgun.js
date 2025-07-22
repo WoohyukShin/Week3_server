@@ -12,13 +12,9 @@ class Shotgun extends Skill_1.Skill {
     execute(allPlayers) {
         if (this.usesLeft <= 0)
             return;
-        if (this.owner.game && this.owner.game.broadcast) {
-            this.owner.game.broadcast('Shotgun', {
-                socketId: this.owner.socketId
-            });
-        }
         this.usesLeft--;
         this.onUse();
+        this.owner.playerMotion = 'shotgun';
     }
 }
 exports.default = Shotgun;

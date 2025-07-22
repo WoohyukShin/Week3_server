@@ -45,16 +45,13 @@ class Bumpercar extends Skill_1.Skill {
     execute(allPlayers) {
         if (this.used)
             return;
-        this.owner.bumpercar = true;
+        this.owner.playerMotion = 'bumpercar';
         this.used = true;
-        this.onUse();
+        // SFX 재생 신호
         if (this.owner.game && this.owner.game.broadcast) {
-            this.owner.game.broadcast('skillEffect', {
-                type: 'bumpercar',
-                socketId: this.owner.socketId,
-                duration: 3000
-            });
+            this.owner.game.broadcast('playSkillSfx', { type: 'bumpercar' });
         }
+        this.onUse();
         setTimeout(() => {
             if (this.owner.isAlive) {
                 allPlayers.forEach(p => {
@@ -62,13 +59,7 @@ class Bumpercar extends Skill_1.Skill {
                         p.flowGauge = Math.max(0, Math.floor(p.flowGauge * (1 - GAME_CONSTANTS.BUMPERCAR_FLOW_GAUGE_DECREASE_RATE)));
                     }
                 });
-                this.owner.bumpercar = false;
-                if (this.owner.game && this.owner.game.broadcast) {
-                    this.owner.game.broadcast('skillEffect', {
-                        type: 'bumpercarEnd',
-                        socketId: this.owner.socketId
-                    });
-                }
+                this.owner.playerMotion = 'coding';
             }
         }, 3000);
     }
