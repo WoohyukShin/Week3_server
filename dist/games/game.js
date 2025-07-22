@@ -50,17 +50,11 @@ class Game {
     start() {
         console.log(`🎮 Game.start() called for room: ${this.roomId}`);
         this.players.forEach(player => {
-            const SkillClass = SkillManager_1.default.skills.get('bumpercar');
-            console.log('[Game.start] SkillClass:', SkillClass);
-            console.log('[Game.start] Player name:', player.username);
-            console.log('[Game.start] Player socketId:', player.socketId);
-            if (SkillClass) {
-                player.skill = new SkillClass(player);
-                console.log('[Game.start] player.skill:', player.skill);
-                console.log('[Game.start] player.skill.name:', player.skill ? player.skill.name : null);
-                this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
-                console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
-            }
+            // 랜덤 스킬 할당
+            const skillInstance = SkillManager_1.default.assignRandomSkill(player);
+            player.skill = skillInstance;
+            this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
+            console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
         });
         // skillReadySet 초기화
         const room = this.roomManager.getRoom(this.roomId);
@@ -86,10 +80,13 @@ class Game {
         this.broadcast('gameStateUpdate', this.getGameState());
         this.checkEndCondition();
     }
-    handleManagerEvent() {
+    handleManagerEvent(forceAppear = false) {
         const randomValue = Math.random();
-        const shouldAppear = randomValue < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY;
-        console.log(`🎲 Manager check: random=${randomValue.toFixed(3)}, threshold=${GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY}, shouldAppear=${shouldAppear}, isManagerAppeared=${this.isManagerAppeared}`);
+        var shouldAppear = randomValue < GAME_CONSTANTS.MANAGER_APPEARANCE_PROBABILITY;
+        if (forceAppear) {
+            shouldAppear = true;
+            return;
+        }
         if (shouldAppear && !this.isManagerAppeared) {
             this.isManagerAppeared = true;
             console.log('🚨 Manager appeared! Setting isManagerAppeared = true');
@@ -102,7 +99,7 @@ class Game {
     }
     killPlayers() {
         this.players.forEach(player => {
-            if (player.isDancing) {
+            if (player.playerMotion != 'coding') {
                 player.isAlive = false;
                 this.broadcast('playerDied', { socketId: player.socketId, reason: 'dancing' });
             }
@@ -111,28 +108,19 @@ class Game {
         console.log('💀 Manager killed players and set isManagerAppeared = false');
     }
     updatePlayerGauges(player) {
-        if (player.isDancing) {
-            const oldFlow = player.flowGauge;
-            player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
-            console.log(`💃 [${player.username}] Dancing - Flow: ${oldFlow} → ${player.flowGauge} (+${GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK})`);
+        if (player.playerMotion === 'dancing') { // dancing일 때 몰입 게이지 증가
+            player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge +
+                GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
+        }
+        else if (player.playerMotion === 'gaming') { // gaming일 때 몰입 게이지 덜 증가
+            player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge +
+                GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK * GAME_CONSTANTS.GAME_FLOW_GAUGE_RATE);
+        }
+        else if (player.isFlowProtedted || player.playerMotion !== 'coding') {
+            return; // 커피 버프 중 or 운동, 노래 부를 때는 몰입 게이지 변화 없음
         }
         else {
-            const oldFlow = player.flowGauge;
             player.flowGauge = Math.max(0, player.flowGauge - GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK);
-            console.log(`😴 [${player.username}] Not dancing - Flow: ${oldFlow} → ${player.flowGauge} (-${GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK})`);
-            let commitIncrease = GAME_CONSTANTS.COMMIT_GAUGE_PER_TICK;
-            if (player.flowGauge < GAME_CONSTANTS.FLOW_GAUGE_PENALTY_THRESHOLD) {
-                commitIncrease /= 2;
-            }
-            const oldCommit = player.commitGauge;
-            player.commitGauge += commitIncrease;
-            console.log(`📝 [${player.username}] Commit: ${oldCommit} → ${player.commitGauge} (+${commitIncrease})`);
-            if (player.commitGauge >= GAME_CONSTANTS.MAX_COMMIT_GAUGE) {
-                player.commitGauge = 0;
-                player.commitCount++;
-                console.log(`🎉 [${player.username}] Commit success! Count: ${player.commitCount}`);
-                this.broadcast('commitSuccess', { socketId: player.socketId, commitCount: player.commitCount });
-            }
         }
     }
     checkPlayerStatus(player) {
@@ -151,7 +139,21 @@ class Game {
         if (this.gameInterval) {
             clearInterval(this.gameInterval);
         }
-        this.broadcast('gameEnded', { winner: winner ? winner.getInfo() : null });
+        const endTime = Date.now();
+        const room = this.roomManager.getRoom(this.roomId);
+        const totalTimeMs = endTime - (room?.startTime ?? endTime); // 혹시 startTime이 없을 경우 대비
+        const minutes = Math.floor(totalTimeMs / 60000).toString().padStart(2, '0');
+        const seconds = Math.floor((totalTimeMs % 60000) / 1000).toString().padStart(2, '0');
+        const formattedTime = `${minutes}:${seconds}`;
+        this.players.forEach((player) => {
+            const resultData = {
+                winnerSocketId: winner?.socketId ?? '',
+                skill: player.skill?.name || '',
+                time: formattedTime,
+            };
+            this.io.to(player.socketId).emit('gameEnded', resultData);
+            console.log(`[Game.endGame] Sent gameEnded to ${player.username}`, resultData);
+        });
         if (this.roomManager) {
             this.roomManager.rooms.delete(this.roomId);
             console.log(`[${this.roomId}] Room deleted after game ended`);
@@ -163,38 +165,49 @@ class Game {
             return;
         switch (action) {
             case 'startDancing':
-                player.isDancing = true;
+                player.playerMotion = 'dancing';
                 break;
             case 'stopDancing':
-                player.isDancing = false;
+                player.playerMotion = 'coding';
                 break;
-            case 'push':
-                this.broadcast('pushStarted', { socketId: player.socketId });
-                setTimeout(() => {
-                    this.handlePush(player);
-                }, GAME_CONSTANTS.PUSH_ANIMATION_DURATION_MS);
-                break;
+            // push 관련 case 삭제
         }
     }
-    handlePush(player) {
-        const successRate = player.commitCount * GAME_CONSTANTS.PUSH_SUCCESS_BASE_RATE;
-        if (Math.random() < successRate) {
-            this.endGame(player);
-        }
-        else {
-            player.commitCount = 0;
-            this.broadcast('pushFailed', { socketId: player.socketId });
-        }
+    /*
+    handlePush(player: Player): void {
+      const successRate = player.commitCount * GAME_CONSTANTS.PUSH_SUCCESS_BASE_RATE;
+      if (Math.random() < successRate) {
+        this.endGame(player);
+      } else {
+        player.commitCount = 0;
+        this.broadcast('pushFailed', { socketId: player.socketId });
+      }
     }
+  */
     handleSkillUse(socketId) {
         const player = this.players.find(p => p.socketId === socketId);
+        console.log('[DEBUG] Game.handleSkillUse : CALLED!');
         if (player && player.skill) {
-            console.log(`[SKILL] ${player.username} uses skill: ${player.skill.name}`);
+            console.log('[DEBUG] Game.handleSkillUse : my Skill name is:', player?.skill?.name);
             player.skill.execute(this.players);
             // 여기에 broadcast 추가??
         }
         else {
-            console.log(`[SKILL] Player ${socketId} tried to use skill, but has none.`);
+            console.log(`[DEBUG] Game.handleSkillUse : Player ${socketId} tried to use skill, but has none.`);
+        }
+    }
+    // animationComplete 이벤트 처리
+    handleAnimationComplete(socketId, type) {
+        const player = this.players.find(p => p.socketId === socketId);
+        if (!player)
+            return;
+        if (type === 'coffee') {
+            player.playerMotion = 'coding';
+        }
+        else if (type === 'shotgun') {
+            player.playerMotion = 'coding';
+            this.isManagerAppeared = true;
+            this.broadcast('managerAppeared', {});
         }
     }
     broadcast(event, data) {
