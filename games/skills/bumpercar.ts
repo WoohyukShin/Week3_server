@@ -13,16 +13,9 @@ export default class Bumpercar extends Skill {
 
   execute(allPlayers: Player[]): void {
     if (this.used) return;
-    this.owner.bumpercar = true;
+    this.owner.playerMotion = 'bumpercar';
     this.used = true;
     this.onUse();
-    if (this.owner.game && this.owner.game.broadcast) {
-      this.owner.game.broadcast('skillEffect', {
-        type: 'bumpercar',
-        socketId: this.owner.socketId,
-        duration: 3000
-      });
-    }
     setTimeout(() => {
       if (this.owner.isAlive) {
         allPlayers.forEach(p => {
@@ -30,13 +23,7 @@ export default class Bumpercar extends Skill {
             p.flowGauge = Math.max(0, Math.floor(p.flowGauge * (1 - GAME_CONSTANTS.BUMPERCAR_FLOW_GAUGE_DECREASE_RATE)));
           }
         });
-        this.owner.bumpercar = false;
-        if (this.owner.game && this.owner.game.broadcast) {
-          this.owner.game.broadcast('skillEffect', {
-            type: 'bumpercarEnd',
-            socketId: this.owner.socketId
-          });
-        }
+        this.owner.playerMotion = 'coding';
       }
     }, 3000);
   }

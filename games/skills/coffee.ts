@@ -1,5 +1,6 @@
 import { Skill } from '../Skill';
 import Player from '../player';
+import * as GAME_CONSTANTS from '../../constants/constants';
 
 export default class Coffee extends Skill {
   constructor(owner: Player) {
@@ -11,9 +12,10 @@ export default class Coffee extends Skill {
 
   execute(): void {
     this.onUse();
+    this.owner.playerMotion = 'coffee';
     (this.owner as any).isFlowProtected = true;
     setTimeout(() => {
       (this.owner as any).isFlowProtected = false;
-    }, 5000);
+    }, GAME_CONSTANTS.CAFFEINE_BUFF_DURATION_MS);
   }
 } 
