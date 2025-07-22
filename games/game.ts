@@ -32,12 +32,14 @@ class Game {
   start(): void {
     console.log(`🎮 Game.start() called for room: ${this.roomId}`);
     this.players.forEach(player => {
-      // Skill 랜덤으로 할당하고 (지금은 범퍼카만) skillAssigned 이벤트 발생
       const SkillClass = SkillManager.skills.get('bumpercar');
+      console.log('[Game.start] SkillClass:', SkillClass);
       if (SkillClass) {
         player.skill = new SkillClass(player);
-        this.io.to(player.socketId).emit('skillAssigned', { skill: 'bumpercar' });
-        console.log(`[DEBUG] game.ts.start : skillAssigned sent to ${player.username} (${player.socketId}): bumpercar`);
+        console.log('[Game.start] player.skill:', player.skill);
+        console.log('[Game.start] player.skill.name:', player.skill ? player.skill.name : null);
+        this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
+        console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
       }
     });
     // skillReadySet 초기화

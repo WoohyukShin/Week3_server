@@ -57,7 +57,7 @@ class Player {
 
   // 플레이어의 주요 정보를 객체로 반환 (클라이언트에 전송하기 위함)
   getInfo(): PlayerInfo {
-    return {
+    const info = {
       socketId: this.socketId,
       username: this.username,
       isAlive: this.isAlive,
@@ -71,6 +71,8 @@ class Player {
       hasCaffeine: this.hasCaffeine,
       muscleCount: this.muscleCount,
     };
+    console.log('[Player.getInfo] this.skill:', this.skill, 'this.skill?.name:', this.skill ? this.skill.name : null, 'info:', info);
+    return info;
   }
 }
 

@@ -14,16 +14,19 @@ class SkillManager {
   constructor() {
     this.skills = new Map();
     // 타입스크립트 default import로 명확하게 등록
+    console.log('[SkillManager] Bumpercar import:', Bumpercar);
     this.skills.set('bumpercar', Bumpercar);
     this.skills.set('coffee', Coffee);
     this.skills.set('exercise', Exercise);
     this.skills.set('game', GameSkill);
     this.skills.set('shotgun', Shotgun);
-    console.log('SkillManager loaded skills:', Array.from(this.skills.keys()));
+    console.log('[SkillManager] skills Map keys:', Array.from(this.skills.keys()));
+    console.log('[SkillManager] skills Map bumpercar:', this.skills.get('bumpercar'));
   }
 
   assignRandomSkill(player: Player): Skill | null {
     const skillNames = Array.from(this.skills.keys());
+    console.log('[SkillManager] assignRandomSkill skillNames:', skillNames);
     
     if (skillNames.length === 0) {
       console.warn('No skills available to assign.');
@@ -31,13 +34,14 @@ class SkillManager {
     }
     const randomSkillName = skillNames[Math.floor(Math.random() * skillNames.length)];
     const SkillClass = this.skills.get(randomSkillName);
+    console.log('[SkillManager] assignRandomSkill SkillClass:', SkillClass, 'for', randomSkillName);
     if (!SkillClass) {
       console.error(`Could not find class for skill: ${randomSkillName}`);
       return null;
     }
     const skillInstance = new SkillClass(player);
     player.skill = skillInstance;
-    console.log(`Assigned skill '${randomSkillName}' to player ${player.username}`);
+    console.log(`[SkillManager] Assigned skill '${randomSkillName}' to player ${player.username}`, skillInstance);
     return skillInstance;
   }
 }
