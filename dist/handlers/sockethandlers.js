@@ -56,7 +56,7 @@ exports.default = (io) => {
                 }
             }
         });
-        // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림
+        // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림. 진짜 게임 시작
         socket.on('gameReady', () => {
             console.log('[DEBUG] sockethandlers.ts : got gameReady from ', socket.id);
             const roomId = playerRoomMap.get(socket.id);
@@ -76,6 +76,13 @@ exports.default = (io) => {
                         console.log(`[DEBUG] sockethandlers.ts : 🎮 Game started in room: ${roomId}`);
                     }
                 }
+            }
+        });
+        socket.on('startGame', () => {
+            console.log(`[DEBUG] sockethandlers.ts : startGame received from ${socket.id}`);
+            const roomId = playerRoomMap.get(socket.id);
+            if (roomId) {
+                io.to(roomId).emit('gameStart');
             }
         });
         socket.on('getRoomState', () => {

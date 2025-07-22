@@ -75,7 +75,7 @@ export default (io: Server): void => {
       }
     });
 
-    // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림
+    // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림. 진짜 게임 시작
     socket.on('gameReady', () => {
       console.log('[DEBUG] sockethandlers.ts : got gameReady from ', socket.id);
       const roomId = playerRoomMap.get(socket.id);
@@ -94,6 +94,14 @@ export default (io: Server): void => {
             console.log(`[DEBUG] sockethandlers.ts : 🎮 Game started in room: ${roomId}`);
           }
         }
+      }
+    });
+
+    socket.on('startGame', () => { // 방장이 게임 시작 버튼을 누름
+      console.log(`[DEBUG] sockethandlers.ts : startGame received from ${socket.id}`);
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        io.to(roomId).emit('gameStart');
       }
     });
 
