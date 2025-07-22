@@ -52,12 +52,13 @@ exports.default = (io) => {
                         action: data.action,
                         payload: data.payload
                     });
-                    console.log(`📡 Action broadcasted to room: ${roomId}`);
+                    console.log(`[DEBUG] sockethandlers.ts :📡 Action broadcasted to room: ${roomId}`);
                 }
             }
         });
         // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림
         socket.on('gameReady', () => {
+            console.log('[DEBUG] sockethandlers.ts : got gameReady from ', socket.id);
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
@@ -72,7 +73,7 @@ exports.default = (io) => {
                         room.players.forEach(player => {
                             io.to(player.socketId).emit('setLocalPlayer', player.socketId);
                         });
-                        console.log(`🎮 Game started in room: ${roomId}`);
+                        console.log(`[DEBUG] sockethandlers.ts : 🎮 Game started in room: ${roomId}`);
                     }
                 }
             }
