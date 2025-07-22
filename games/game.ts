@@ -138,7 +138,6 @@ endGame(winner: Player | null): void {
   this.players.forEach((player) => {
     const resultData = {
       winnerSocketId: winner?.socketId ?? '',
-      commitCount: player.commitCount,
       skill: player.skill?.name || '',
       time: formattedTime,
     };
