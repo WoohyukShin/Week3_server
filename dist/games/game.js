@@ -63,6 +63,7 @@ class Game {
     }
     startGameLoop() {
         this.gameInterval = setInterval(() => this.tick(), GAME_CONSTANTS.GAME_TICK_INTERVAL);
+        this.io.to(this.roomId).emit('startGameLoop');
         console.log(`⏰ Game interval started for room: ${this.roomId}`);
     }
     tick() {
