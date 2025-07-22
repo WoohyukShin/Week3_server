@@ -4,7 +4,7 @@ const Skill = require('../Skill');
 class shotgun extends skills {
   constructor(owner) {
     super(owner);
-    this.name = '샷건';
+    this.name = 'shotgun';
     this.description = '운영진 강제 등장. 최대 2회 사용.';
     this.cooldown = 5;
     this.usesLeft = 2;

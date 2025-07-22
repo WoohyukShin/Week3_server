@@ -1,35 +1,20 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+// 각 스킬 클래스 import (CommonJS require 사용)
+const Bumpercar = require('./skills/bumpercar');
+const Coffee = require('./skills/coffee');
+const Exercise = require('./skills/exercise');
+const Game = require('./skills/game');
+const Shotgun = require('./skills/shotgun');
 class SkillManager {
     constructor() {
-        this.skills = new Map(); // Map<skillName, SkillClass>
-        this.loadSkills();
-    }
-    loadSkills() {
-        const skillsDir = path_1.default.join(__dirname, 'skills');
-        if (!fs_1.default.existsSync(skillsDir)) {
-            fs_1.default.mkdirSync(skillsDir);
-        }
-        const skillFiles = fs_1.default.readdirSync(skillsDir).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
-        for (const file of skillFiles) {
-            try {
-                const module = require(path_1.default.join(skillsDir, file));
-                // CommonJS (module.exports = X)와 ES Module (export default X) 모두 호환되도록 처리
-                const SkillClass = module.default || module;
-                // 파일 이름을 기반으로 스킬 이름을 생성 (예: caffeine.ts -> caffeine)
-                const skillName = path_1.default.basename(file, path_1.default.extname(file));
-                this.skills.set(skillName, SkillClass);
-                console.log(`Loaded skill: ${skillName}`);
-            }
-            catch (err) {
-                console.error(`Failed to load skill from ${file}:`, err);
-            }
-        }
+        this.skills = new Map();
+        // 수동 매핑: 스킬 이름과 클래스 직접 등록
+        this.skills.set('bumpercar', Bumpercar);
+        this.skills.set('coffee', Coffee);
+        this.skills.set('exercise', Exercise);
+        this.skills.set('game', Game);
+        this.skills.set('shotgun', Shotgun);
         console.log('SkillManager loaded skills:', Array.from(this.skills.keys()));
     }
     /**

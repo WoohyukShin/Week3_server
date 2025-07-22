@@ -4,7 +4,7 @@ const Skill = require('../Skill');
 class coffee extends Skill {
   constructor(owner) {
     super(owner);
-    this.name = '커피'; // Shown to player
+    this.name = 'coffee'; // Shown to player
     this.description = '5초간 몰입 게이지 감소 없음';
     this.cooldown = 15;
   }
