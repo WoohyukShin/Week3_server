@@ -52,6 +52,8 @@ class Game {
         this.players.forEach(player => {
             const SkillClass = SkillManager_1.default.skills.get('bumpercar');
             console.log('[Game.start] SkillClass:', SkillClass);
+            console.log('[Game.start] Player name:', player.username);
+            console.log('[Game.start] Player socketId:', player.socketId);
             if (SkillClass) {
                 player.skill = new SkillClass(player);
                 console.log('[Game.start] player.skill:', player.skill);
