@@ -36,7 +36,7 @@ exports.default = (io) => {
             }
         });
         socket.on('getRoomList', () => {
-            const rooms = roomManager.getRoomList(); // roomId, roomName, host 포함한 배열
+            const rooms = roomManager.getRoomList();
             socket.emit('roomList', rooms);
         });
         socket.on('playerAction', (data) => {
@@ -46,7 +46,6 @@ exports.default = (io) => {
                 const room = roomManager.getRoom(roomId);
                 if (room && room.game) {
                     room.game.handlePlayerAction(socket.id, data.action, data.payload);
-                    // 다른 플레이어들에게 액션 전파
                     socket.to(roomId).emit('playerAction', {
                         socketId: socket.id,
                         action: data.action,
@@ -56,7 +55,6 @@ exports.default = (io) => {
                 }
             }
         });
-        // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림. 진짜 게임 시작
         socket.on('gameReady', () => {
             console.log('[DEBUG] sockethandlers.ts : got gameReady from ', socket.id);
             const roomId = playerRoomMap.get(socket.id);
@@ -67,7 +65,6 @@ exports.default = (io) => {
                         room.gameReadySet = new Set();
                     room.gameReadySet.add(socket.id);
                     if (room.gameReadySet.size === room.players.size) {
-                        // 모든 플레이어가 준비됨 → 진짜 게임 시작
                         room.startGame(io);
                         io.to(roomId).emit('gameStarted', room.getState());
                         room.players.forEach(player => {
@@ -105,7 +102,6 @@ exports.default = (io) => {
                 }
             }
         });
-        // 모든 플레이어가 Skill 설명창을 읽고 OK를 누름.
         socket.on('skillReady', () => {
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
@@ -125,13 +121,28 @@ exports.default = (io) => {
                 }
             }
         });
-        // 스킬 사용 이벤트
         socket.on('skillUse', () => {
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
                 if (room && room.game) {
                     room.game.handleSkillUse(socket.id);
+                }
+            }
+        });
+        socket.on('playerExitedAfterGame', () => {
+            const roomId = playerRoomMap.get(socket.id);
+            if (roomId) {
+                const room = roomManager.getRoom(roomId);
+                if (room) {
+                    if (!room.exitedPlayers) {
+                        room.exitedPlayers = new Set();
+                    }
+                    room.exitedPlayers.add(socket.id);
+                    if (room.exitedPlayers.size === room.players.size) {
+                        roomManager.rooms.delete(roomId);
+                        console.log(`[${roomId}] Room deleted after all players exited`);
+                    }
                 }
             }
         });

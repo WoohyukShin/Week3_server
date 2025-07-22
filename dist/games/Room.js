@@ -13,6 +13,7 @@ class Room {
         this.game = null; // 게임이 시작되면 Game 인스턴스가 할당됩니다.
         this.roomManager = roomManager;
         this.skillReadySet = new Set();
+        this.exitedPlayers = new Set();
         this.addPlayer(hostPlayer);
     }
     addPlayer(player) {
@@ -72,6 +73,13 @@ class Room {
     }
     isAllSkillReady() {
         return this.skillReadySet.size === this.players.size;
+    }
+    // 🎯 게임 끝나고 나간 사람 기록용
+    markPlayerExited(socketId) {
+        this.exitedPlayers.add(socketId);
+    }
+    areAllPlayersExited() {
+        return this.exitedPlayers.size === this.players.size;
     }
 }
 exports.default = Room;

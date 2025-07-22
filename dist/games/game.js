@@ -56,20 +56,16 @@ class Game {
             this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
             console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
         });
-        // skillReadySet 초기화
         const room = this.roomManager.getRoom(this.roomId);
-        if (room) {
+        if (room)
             room.resetSkillReady();
-        }
         this.broadcast('gameStarted', this.getGameState());
     }
-    // 모든 플레이어가 OK(ready) 누르면 진짜 게임 시작
     startGameLoop() {
         this.gameInterval = setInterval(() => this.tick(), GAME_CONSTANTS.GAME_TICK_INTERVAL);
-        console.log(`⏰ Game interval started for room: ${this.roomId}, tick interval: ${GAME_CONSTANTS.GAME_TICK_INTERVAL}ms`);
+        console.log(`⏰ Game interval started for room: ${this.roomId}`);
     }
     tick() {
-        console.log(`🔄 Tick called for room: ${this.roomId}, isManagerAppeared: ${this.isManagerAppeared}`);
         this.handleManagerEvent();
         this.players.forEach(player => {
             if (!player.isAlive)
@@ -89,12 +85,8 @@ class Game {
         }
         if (shouldAppear && !this.isManagerAppeared) {
             this.isManagerAppeared = true;
-            console.log('🚨 Manager appeared! Setting isManagerAppeared = true');
             this.broadcast('managerAppeared', {});
-            setTimeout(() => {
-                console.log('⏰ Manager timeout - killing players and setting isManagerAppeared = false');
-                this.killPlayers();
-            }, GAME_CONSTANTS.MANAGER_KILL_DELAY_MS);
+            setTimeout(() => this.killPlayers(), GAME_CONSTANTS.MANAGER_KILL_DELAY_MS);
         }
     }
     killPlayers() {
@@ -105,7 +97,6 @@ class Game {
             }
         });
         this.isManagerAppeared = false;
-        console.log('💀 Manager killed players and set isManagerAppeared = false');
     }
     updatePlayerGauges(player) {
         if (player.playerMotion === 'dancing') { // dancing일 때 몰입 게이지 증가
@@ -131,20 +122,16 @@ class Game {
     }
     checkEndCondition() {
         const alivePlayers = this.players.filter(p => p.isAlive);
-        if (alivePlayers.length <= 1) {
-            this.endGame(alivePlayers.length === 1 ? alivePlayers[0] : null);
-        }
+        if (alivePlayers.length <= 1)
+            this.endGame(alivePlayers[0] || null);
     }
     endGame(winner) {
-        if (this.gameInterval) {
+        if (this.gameInterval)
             clearInterval(this.gameInterval);
-        }
         const endTime = Date.now();
         const room = this.roomManager.getRoom(this.roomId);
-        const totalTimeMs = endTime - (room?.startTime ?? endTime); // 혹시 startTime이 없을 경우 대비
-        const minutes = Math.floor(totalTimeMs / 60000).toString().padStart(2, '0');
-        const seconds = Math.floor((totalTimeMs % 60000) / 1000).toString().padStart(2, '0');
-        const formattedTime = `${minutes}:${seconds}`;
+        const totalTimeMs = endTime - (room?.startTime ?? endTime);
+        const formattedTime = `${Math.floor(totalTimeMs / 60000).toString().padStart(2, '0')}:${Math.floor((totalTimeMs % 60000) / 1000).toString().padStart(2, '0')}`;
         this.players.forEach((player) => {
             const resultData = {
                 winnerSocketId: winner?.socketId ?? '',
@@ -186,14 +173,8 @@ class Game {
   */
     handleSkillUse(socketId) {
         const player = this.players.find(p => p.socketId === socketId);
-        console.log('[DEBUG] Game.handleSkillUse : CALLED!');
         if (player && player.skill) {
-            console.log('[DEBUG] Game.handleSkillUse : my Skill name is:', player?.skill?.name);
             player.skill.execute(this.players);
-            // 여기에 broadcast 추가??
-        }
-        else {
-            console.log(`[DEBUG] Game.handleSkillUse : Player ${socketId} tried to use skill, but has none.`);
         }
     }
     // animationComplete 이벤트 처리
@@ -214,13 +195,11 @@ class Game {
         this.io.to(this.roomId).emit(event, data);
     }
     getGameState() {
-        const gameState = {
+        return {
             roomId: this.roomId,
             players: this.players.map(p => p.getInfo()),
             isManagerAppeared: this.isManagerAppeared,
         };
-        console.log(`📊 Broadcasting GameState - isManagerAppeared: ${this.isManagerAppeared}, Players: ${this.players.length}`);
-        return gameState;
     }
 }
 exports.default = Game;
