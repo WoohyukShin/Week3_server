@@ -1,27 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// 각 스킬 클래스 import (CommonJS require 사용)
-const Bumpercar = require('./skills/bumpercar');
-const Coffee = require('./skills/coffee');
-const Exercise = require('./skills/exercise');
-const Game = require('./skills/game');
-const Shotgun = require('./skills/shotgun');
+const bumpercar_1 = __importDefault(require("./skills/bumpercar"));
+const coffee_1 = __importDefault(require("./skills/coffee"));
+const exercise_1 = __importDefault(require("./skills/exercise"));
+const game_1 = __importDefault(require("./skills/game"));
+const shotgun_1 = __importDefault(require("./skills/shotgun"));
 class SkillManager {
     constructor() {
         this.skills = new Map();
-        // 수동 매핑: 스킬 이름과 클래스 직접 등록
-        this.skills.set('bumpercar', Bumpercar);
-        this.skills.set('coffee', Coffee);
-        this.skills.set('exercise', Exercise);
-        this.skills.set('game', Game);
-        this.skills.set('shotgun', Shotgun);
+        // 타입스크립트 default import로 명확하게 등록
+        this.skills.set('bumpercar', bumpercar_1.default);
+        this.skills.set('coffee', coffee_1.default);
+        this.skills.set('exercise', exercise_1.default);
+        this.skills.set('game', game_1.default);
+        this.skills.set('shotgun', shotgun_1.default);
         console.log('SkillManager loaded skills:', Array.from(this.skills.keys()));
     }
-    /**
-       플레이어에게 랜덤 스킬을 생성하여 부여합니다.
-       @param {Player} player - 스킬을 받을 플레이어
-       @returns {Skill|null}
-     */
     assignRandomSkill(player) {
         const skillNames = Array.from(this.skills.keys());
         if (skillNames.length === 0) {
