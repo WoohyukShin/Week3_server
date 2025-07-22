@@ -152,6 +152,16 @@ export default (io: Server): void => {
       }
     });
 
+    socket.on('animationComplete', (data: { type: string }) => {
+      const roomId = playerRoomMap.get(socket.id);
+      if (roomId) {
+        const room = roomManager.getRoom(roomId);
+        if (room && room.game) {
+          room.game.handleAnimationComplete(socket.id, data.type);
+        }
+      }
+    });
+
     socket.on('playerExitedAfterGame', () => {
       const roomId = playerRoomMap.get(socket.id);
       if (roomId) {

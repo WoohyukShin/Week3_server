@@ -45,6 +45,10 @@ class Coffee extends Skill_1.Skill {
     execute() {
         this.onUse();
         this.owner.playerMotion = 'coffee';
+        // SFX 재생 신호
+        if (this.owner.game && this.owner.game.broadcast) {
+            this.owner.game.broadcast('playSkillSfx', { type: 'coffee' });
+        }
         this.owner.isFlowProtected = true;
         setTimeout(() => {
             this.owner.isFlowProtected = false;

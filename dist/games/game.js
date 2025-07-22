@@ -179,6 +179,7 @@ class Game {
     }
     // animationComplete 이벤트 처리
     handleAnimationComplete(socketId, type) {
+        console.log("[DEBUG] Game.ts : handleAnimationComplete : ", type);
         const player = this.players.find(p => p.socketId === socketId);
         if (!player)
             return;
