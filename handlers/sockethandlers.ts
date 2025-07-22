@@ -75,7 +75,7 @@ export default (io: Server): void => {
       }
     });
 
-    socket.on('startGame', () => {
+    socket.on('startGame', () => { // 게임 시작
       console.log(`🎯 Socket ${socket.id} starting game`);
       const roomId = playerRoomMap.get(socket.id);
       if (roomId) {
