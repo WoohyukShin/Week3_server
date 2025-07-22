@@ -86,9 +86,9 @@ class Game {
 
   killPlayers(): void {
     this.players.forEach(player => {
-      if (player.playerMotion != 'coding') {
+      if (player.playerMotion == 'dancing' || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
         player.isAlive = false;
-        this.broadcast('playerDied', { socketId: player.socketId, reason: 'dancing' });
+        this.broadcast('playerDied', { socketId: player.socketId, reason: 'Manager' });
       }
     });
     this.isManagerAppeared = false;
