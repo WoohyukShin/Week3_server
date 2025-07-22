@@ -184,12 +184,13 @@ class Game {
 
   handleSkillUse(socketId: string): void {
     const player = this.players.find(p => p.socketId === socketId);
+    console.log('[DEBUG] Game.handleSkillUse : CALLED!');
     if (player && player.skill) {
-      console.log(`[SKILL] ${player.username} uses skill: ${player.skill.name}`);
+      console.log('[DEBUG] Game.handleSkillUse : my Skill name is:', player?.skill?.name);
       player.skill.execute(this.players);
       // 여기에 broadcast 추가??
     } else {
-      console.log(`[SKILL] Player ${socketId} tried to use skill, but has none.`);
+      console.log(`[DEBUG] Game.handleSkillUse : Player ${socketId} tried to use skill, but has none.`);
     }
   }
 
