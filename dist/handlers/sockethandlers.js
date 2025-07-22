@@ -56,19 +56,24 @@ exports.default = (io) => {
                 }
             }
         });
-        socket.on('startGame', () => {
-            console.log(`🎯 Socket ${socket.id} starting game`);
+        // 모든 플레이어가 게임 페이지에 진입해 준비가 되었음을 알림
+        socket.on('gameReady', () => {
             const roomId = playerRoomMap.get(socket.id);
             if (roomId) {
                 const room = roomManager.getRoom(roomId);
-                if (room && room.hostId === socket.id && !room.game) {
-                    room.startGame(io);
-                    io.to(roomId).emit('gameStarted', room.getState());
-                    // 게임 시작 시 모든 플레이어에게 로컬 플레이어 ID 설정
-                    room.players.forEach(player => {
-                        io.to(player.socketId).emit('setLocalPlayer', player.socketId);
-                    });
-                    console.log(`🎮 Game started in room: ${roomId}`);
+                if (room) {
+                    if (!room.gameReadySet)
+                        room.gameReadySet = new Set();
+                    room.gameReadySet.add(socket.id);
+                    if (room.gameReadySet.size === room.players.size) {
+                        // 모든 플레이어가 준비됨 → 진짜 게임 시작
+                        room.startGame(io);
+                        io.to(roomId).emit('gameStarted', room.getState());
+                        room.players.forEach(player => {
+                            io.to(player.socketId).emit('setLocalPlayer', player.socketId);
+                        });
+                        console.log(`🎮 Game started in room: ${roomId}`);
+                    }
                 }
             }
         });

@@ -15,6 +15,7 @@ declare class Room {
     game: Game | null;
     roomManager: RoomManager;
     skillReadySet: Set<string>;
+    gameReadySet?: Set<string>;
     constructor(roomId: string, hostPlayer: Player, roomManager: RoomManager);
     addPlayer(player: Player): void;
     removePlayer(socketId: string): void;

@@ -18,6 +18,7 @@ class Room {
   game: Game | null;
   roomManager: RoomManager;
   skillReadySet: Set<string>;
+  gameReadySet?: Set<string>; // 게임 준비 완료한 플레이어 socketId 집합
 
   constructor(roomId: string, hostPlayer: Player, roomManager: RoomManager) {
     this.roomId = roomId;
