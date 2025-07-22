@@ -38,6 +38,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const GAME_CONSTANTS = __importStar(require("../constants/constants"));
 const SkillManager_1 = __importDefault(require("./SkillManager"));
+// 춤 종류 (나중에 더 추가할 예정)
+const DANCE_MOTIONS = ['pkpk'];
 class Game {
     constructor(roomId, players, io, roomManager) {
         this.roomId = roomId;
@@ -92,7 +94,7 @@ class Game {
     }
     killPlayers() {
         this.players.forEach(player => {
-            if (player.playerMotion == 'dancing' || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
+            if (DANCE_MOTIONS.includes(player.playerMotion) || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
                 player.isAlive = false;
                 this.broadcast('playerDied', { socketId: player.socketId, reason: 'Manager' });
             }
@@ -100,7 +102,7 @@ class Game {
         this.isManagerAppeared = false;
     }
     updatePlayerGauges(player) {
-        if (player.playerMotion === 'dancing') { // dancing일 때 몰입 게이지 증가
+        if (DANCE_MOTIONS.includes(player.playerMotion)) { // dancing일 때 몰입 게이지 증가
             player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge +
                 GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
         }
@@ -153,7 +155,7 @@ class Game {
             return;
         switch (action) {
             case 'startDancing':
-                player.playerMotion = 'dancing';
+                player.playerMotion = data.danceType;
                 break;
             case 'stopDancing':
                 player.playerMotion = 'coding';
@@ -161,17 +163,6 @@ class Game {
             // push 관련 case 삭제
         }
     }
-    /*
-    handlePush(player: Player): void {
-      const successRate = player.commitCount * GAME_CONSTANTS.PUSH_SUCCESS_BASE_RATE;
-      if (Math.random() < successRate) {
-        this.endGame(player);
-      } else {
-        player.commitCount = 0;
-        this.broadcast('pushFailed', { socketId: player.socketId });
-      }
-    }
-  */
     handleSkillUse(socketId) {
         const player = this.players.find(p => p.socketId === socketId);
         console.log("[DEBUG] Game.ts : handleSkillUse : ", player?.skill?.name);

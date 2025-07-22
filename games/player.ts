@@ -18,7 +18,7 @@ class Player {
   username: string;
   // 운영진 관리
   isAlive: boolean;
-  playerMotion: string; // 'coding' | 'dancing' | 'bumpercar' | 'exercise' | 'coffee'
+  playerMotion: string; // 'coding' | 'pkpk' | 'bumpercar' | 'exercise' | 'coffee' | 'shotgun' | 'gaming'
   // 몰입 & COMMIT 게이지
   flowGauge: number;
   // SKILLS

@@ -46,12 +46,12 @@ class GameSkill extends Skill_1.Skill {
     execute() {
         if (this.usesLeft <= 0)
             return;
-        this.owner.playingGame = true;
+        this.owner.playerMotion = 'gaming';
         // SFX 재생 신호
         console.log('[DEBUG] 서버에서 playSkillSfx broadcast: game');
         this.game.broadcast('playSkillSfx', { type: 'game' });
         setTimeout(() => {
-            this.owner.playingGame = false;
+            this.owner.playerMotion = 'coding';
         }, GAME_CONSTANTS.GAME_TIME_MS);
         this.usesLeft--;
         this.onUse();

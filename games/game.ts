@@ -4,6 +4,9 @@ import { RoomManager } from './RoomManager';
 import { Server } from 'socket.io';
 import SkillManager from './SkillManager';
 
+// 춤 종류 (나중에 더 추가할 예정)
+const DANCE_MOTIONS = ['pkpk'];
+
 export interface GameState {
   roomId: string;
   players: PlayerInfo[];
@@ -76,7 +79,7 @@ class Game {
 
   killPlayers(): void {
     this.players.forEach(player => {
-      if (player.playerMotion == 'dancing' || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
+      if (DANCE_MOTIONS.includes(player.playerMotion) || player.playerMotion == 'exercise' || player.playerMotion == 'bumpercar') {
         player.isAlive = false;
         this.broadcast('playerDied', { socketId: player.socketId, reason: 'Manager' });
       }
@@ -85,7 +88,7 @@ class Game {
   }
 
   updatePlayerGauges(player: Player): void {
-    if (player.playerMotion === 'dancing') { // dancing일 때 몰입 게이지 증가
+    if (DANCE_MOTIONS.includes(player.playerMotion)) { // dancing일 때 몰입 게이지 증가
       player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + 
         GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK);
     } else if (player.playerMotion === 'gaming') { // gaming일 때 몰입 게이지 덜 증가
@@ -139,7 +142,7 @@ class Game {
     if (!player || !player.isAlive) return;
     switch (action) {
       case 'startDancing':
-        player.playerMotion = 'dancing';
+        player.playerMotion = data.danceType;
         break;
       case 'stopDancing':
         player.playerMotion = 'coding';
@@ -147,18 +150,6 @@ class Game {
       // push 관련 case 삭제
     }
   }
-
-  /*
-  handlePush(player: Player): void {
-    const successRate = player.commitCount * GAME_CONSTANTS.PUSH_SUCCESS_BASE_RATE;
-    if (Math.random() < successRate) {
-      this.endGame(player);
-    } else {
-      player.commitCount = 0;
-      this.broadcast('pushFailed', { socketId: player.socketId });
-    }
-  }
-*/
 
   handleSkillUse(socketId: string): void {
     const player = this.players.find(p => p.socketId === socketId);
