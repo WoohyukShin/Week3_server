@@ -16,6 +16,7 @@ class Room {
   players: Map<string, Player>; // Map<socketId, Player>
   hostId: string;
   game: Game | null;
+  startTime?: number; 
   roomManager: RoomManager;
   skillReadySet: Set<string>;
   gameReadySet?: Set<string>; // 게임 준비 완료한 플레이어 socketId 집합
@@ -64,6 +65,7 @@ class Room {
       return;
     }
     console.log(`Starting game in room ${this.roomId}`);
+    this.startTime = Date.now();
     this.game = new Game(this.roomId, Array.from(this.players.values()), io, this.roomManager);
     this.game.start();
   }
