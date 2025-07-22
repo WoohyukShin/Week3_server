@@ -152,6 +152,35 @@ class Game {
     }
   }
 
+  /* endGame(winner: Player | null): void {
+  if (this.gameInterval) {
+    clearInterval(this.gameInterval);
+  }
+
+  const endTime = Date.now();
+  const totalTimeMs = endTime - this.roomManager.getRoom(this.roomId)?.startTime!;
+  const minutes = Math.floor(totalTimeMs / 60000).toString().padStart(2, '0');
+  const seconds = Math.floor((totalTimeMs % 60000) / 1000).toString().padStart(2, '0');
+  const formattedTime = `${minutes}:${seconds}`;
+
+  this.players.forEach((player) => {
+    const resultData = {
+      winnerSocketId: winner?.socketId ?? null,
+      commitCount: player.commitCount,
+      skill: player.skill?.name || '',
+      time: formattedTime,
+    };
+    this.io.to(player.socketId).emit('gameEnded', resultData);
+  });
+
+  // Clean up room
+  if (this.roomManager) {
+    this.roomManager.rooms.delete(this.roomId);
+    console.log(`[${this.roomId}] Room deleted after game ended`);
+  }
+}
+*/ // 게임 끝나고 결과창 나오고 다시 로비로 엑시트하는 구조?
+
   handlePlayerAction(socketId: string, action: PlayerAction, data: any): void {
     const player = this.players.find(p => p.socketId === socketId);
     if (!player || !player.isAlive) return;
