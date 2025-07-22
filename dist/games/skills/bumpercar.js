@@ -36,8 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Skill_1 = require("../Skill");
 const GAME_CONSTANTS = __importStar(require("../../constants/constants"));
 class Bumpercar extends Skill_1.Skill {
-    constructor(owner) {
-        super(owner);
+    constructor(owner, game) {
+        super(owner, game);
         this.name = 'bumpercar';
         this.description = '범퍼카 재생! 다른 사람 commit 게이지 절반으로. 1회 사용.';
         this.used = false;
@@ -49,7 +49,7 @@ class Bumpercar extends Skill_1.Skill {
         this.used = true;
         // SFX 재생 신호
         console.log('[DEBUG] 서버에서 playSkillSfx broadcast: bumpercar');
-        this.owner.game.broadcast('playSkillSfx', { type: 'bumpercar' });
+        this.game.broadcast('playSkillSfx', { type: 'bumpercar' });
         this.onUse();
         setTimeout(() => {
             if (this.owner.isAlive) {

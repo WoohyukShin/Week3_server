@@ -36,8 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Skill_1 = require("../Skill");
 const GAME_CONSTANTS = __importStar(require("../../constants/constants"));
 class GameSkill extends Skill_1.Skill {
-    constructor(owner) {
-        super(owner);
+    constructor(owner, game) {
+        super(owner, game);
         this.name = 'game';
         this.description = '미연시 플레이로 몰입 증가. 운영진 있어도 안전. 최대 3회.';
         this.cooldown = 10;
@@ -49,7 +49,7 @@ class GameSkill extends Skill_1.Skill {
         this.owner.playingGame = true;
         // SFX 재생 신호
         console.log('[DEBUG] 서버에서 playSkillSfx broadcast: game');
-        this.owner.game.broadcast('playSkillSfx', { type: 'game' });
+        this.game.broadcast('playSkillSfx', { type: 'game' });
         setTimeout(() => {
             this.owner.playingGame = false;
         }, GAME_CONSTANTS.GAME_TIME_MS);

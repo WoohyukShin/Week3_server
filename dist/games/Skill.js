@@ -4,9 +4,11 @@ exports.Skill = void 0;
 class Skill {
     /**
      * @param {Player} owner - 이 스킬을 소유한 플레이어
+     * @param {Game} game - 게임 인스턴스
      */
-    constructor(owner) {
+    constructor(owner, game) {
         this.owner = owner;
+        this.game = game;
         this.name = 'Unnamed Skill';
         this.description = 'No description provided.';
         this.cooldown = 0;

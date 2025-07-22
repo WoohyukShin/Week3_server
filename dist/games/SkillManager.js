@@ -21,7 +21,7 @@ class SkillManager {
         console.log('[SkillManager] skills Map keys:', Array.from(this.skills.keys()));
         console.log('[SkillManager] skills Map bumpercar:', this.skills.get('bumpercar'));
     }
-    assignRandomSkill(player) {
+    assignRandomSkill(player, game) {
         const skillNames = Array.from(this.skills.keys());
         console.log('[SkillManager] assignRandomSkill skillNames:', skillNames);
         if (skillNames.length === 0) {
@@ -35,7 +35,7 @@ class SkillManager {
             console.error(`Could not find class for skill: ${randomSkillName}`);
             return null;
         }
-        const skillInstance = new SkillClass(player);
+        const skillInstance = new SkillClass(player, game);
         player.skill = skillInstance;
         console.log(`[SkillManager] Assigned skill '${randomSkillName}' to player ${player.username}`, skillInstance);
         return skillInstance;

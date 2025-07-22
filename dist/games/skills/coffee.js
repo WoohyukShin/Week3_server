@@ -36,8 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Skill_1 = require("../Skill");
 const GAME_CONSTANTS = __importStar(require("../../constants/constants"));
 class Coffee extends Skill_1.Skill {
-    constructor(owner) {
-        super(owner);
+    constructor(owner, game) {
+        super(owner, game);
         this.name = 'coffee';
         this.description = '5초간 몰입 게이지 감소 없음';
         this.cooldown = 15;
@@ -47,7 +47,7 @@ class Coffee extends Skill_1.Skill {
         this.owner.playerMotion = 'coffee';
         // SFX 재생 신호
         console.log('[DEBUG] 서버에서 playSkillSfx broadcast: coffee');
-        this.owner.game.broadcast('playSkillSfx', { type: 'coffee' });
+        this.game.broadcast('playSkillSfx', { type: 'coffee' });
         this.owner.isFlowProtected = true;
         setTimeout(() => {
             this.owner.isFlowProtected = false;

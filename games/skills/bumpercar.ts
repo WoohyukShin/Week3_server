@@ -1,11 +1,12 @@
 import { Skill } from '../Skill';
 import Player from '../player';
+import Game from '../game';
 import * as GAME_CONSTANTS from '../../constants/constants';
 
 export default class Bumpercar extends Skill {
   used: boolean;
-  constructor(owner: Player) {
-    super(owner);
+  constructor(owner: Player, game: Game) {
+    super(owner, game);
     this.name = 'bumpercar';
     this.description = '범퍼카 재생! 다른 사람 commit 게이지 절반으로. 1회 사용.';
     this.used = false;
@@ -17,7 +18,7 @@ export default class Bumpercar extends Skill {
     this.used = true;
     // SFX 재생 신호
     console.log('[DEBUG] 서버에서 playSkillSfx broadcast: bumpercar');
-    this.owner.game.broadcast('playSkillSfx', { type: 'bumpercar' });
+    this.game.broadcast('playSkillSfx', { type: 'bumpercar' });
     this.onUse();
     setTimeout(() => {
       if (this.owner.isAlive) {

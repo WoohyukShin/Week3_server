@@ -6,7 +6,7 @@ import Exercise from './skills/exercise';
 import GameSkill from './skills/game';
 import Shotgun from './skills/shotgun';
 
-type SkillClass = new (owner: Player) => Skill;
+type SkillClass = new (owner: Player, game: any) => Skill;
 
 class SkillManager {
   skills: Map<string, SkillClass>;
@@ -24,7 +24,7 @@ class SkillManager {
     console.log('[SkillManager] skills Map bumpercar:', this.skills.get('bumpercar'));
   }
 
-  assignRandomSkill(player: Player): Skill | null {
+  assignRandomSkill(player: Player, game: any): Skill | null {
     const skillNames = Array.from(this.skills.keys());
     console.log('[SkillManager] assignRandomSkill skillNames:', skillNames);
     
@@ -39,7 +39,7 @@ class SkillManager {
       console.error(`Could not find class for skill: ${randomSkillName}`);
       return null;
     }
-    const skillInstance = new SkillClass(player);
+    const skillInstance = new SkillClass(player, game);
     player.skill = skillInstance;
     console.log(`[SkillManager] Assigned skill '${randomSkillName}' to player ${player.username}`, skillInstance);
     return skillInstance;

@@ -51,7 +51,7 @@ class Game {
         console.log(`🎮 Game.start() called for room: ${this.roomId}`);
         this.players.forEach(player => {
             // 랜덤 스킬 할당
-            const skillInstance = SkillManager_1.default.assignRandomSkill(player);
+            const skillInstance = SkillManager_1.default.assignRandomSkill(player, this);
             player.skill = skillInstance;
             this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
             console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
@@ -174,6 +174,7 @@ class Game {
   */
     handleSkillUse(socketId) {
         const player = this.players.find(p => p.socketId === socketId);
+        console.log("[DEBUG] Game.ts : handleSkillUse : ", player?.skill?.name);
         if (player && player.skill) {
             player.skill.execute(this.players);
         }

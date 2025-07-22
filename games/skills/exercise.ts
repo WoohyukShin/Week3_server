@@ -1,10 +1,11 @@
 import { Skill } from '../Skill';
 import Player from '../player';
+import Game from '../game';
 import * as GAME_CONSTANTS from '../../constants/constants';
 
 export default class Exercise extends Skill {
-  constructor(owner: Player) {
-    super(owner);
+  constructor(owner: Player, game: Game) {
+    super(owner, game);
     this.name = 'exercise';
     this.description = '운동을 시작함. 3초 동안 운동에 성공하면 근육량이 오름. 근육량이 꽉 차면 게임을 승리함.';
     this.cooldown = 3;

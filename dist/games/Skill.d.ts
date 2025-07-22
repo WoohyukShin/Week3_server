@@ -1,14 +1,17 @@
 import Player from './player';
+import Game from './game';
 declare abstract class Skill {
     owner: Player;
+    game: Game;
     name: string;
     description: string;
     cooldown: number;
     lastUsed: number;
     /**
      * @param {Player} owner - 이 스킬을 소유한 플레이어
+     * @param {Game} game - 게임 인스턴스
      */
-    constructor(owner: Player);
+    constructor(owner: Player, game: Game);
     /**
      * 스킬을 사용할 수 있는지 확인합니다.
      * @returns {boolean}

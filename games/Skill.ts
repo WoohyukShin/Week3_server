@@ -1,7 +1,9 @@
 import Player from './player';
+import Game from './game';
 
 abstract class Skill {
   owner: Player;
+  game: Game;
   name: string;
   description: string;
   cooldown: number; // 스킬 쿨다운 (초)
@@ -9,9 +11,11 @@ abstract class Skill {
 
   /**
    * @param {Player} owner - 이 스킬을 소유한 플레이어
+   * @param {Game} game - 게임 인스턴스
    */
-  constructor(owner: Player) {
+  constructor(owner: Player, game: Game) {
     this.owner = owner;
+    this.game = game;
     this.name = 'Unnamed Skill';
     this.description = 'No description provided.';
     this.cooldown = 0;
