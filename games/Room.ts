@@ -16,10 +16,11 @@ class Room {
   players: Map<string, Player>; // Map<socketId, Player>
   hostId: string;
   game: Game | null;
-  startTime?: number; 
+  startTime?: number;
   roomManager: RoomManager;
   skillReadySet: Set<string>;
   gameReadySet?: Set<string>; // 게임 준비 완료한 플레이어 socketId 집합
+  exitedPlayers: Set<string>; // 👈 게임 종료 후 로비로 나간 사람들
 
   constructor(roomId: string, hostPlayer: Player, roomManager: RoomManager) {
     this.roomId = roomId;
@@ -28,6 +29,7 @@ class Room {
     this.game = null; // 게임이 시작되면 Game 인스턴스가 할당됩니다.
     this.roomManager = roomManager;
     this.skillReadySet = new Set();
+    this.exitedPlayers = new Set();
     this.addPlayer(hostPlayer);
   }
 
@@ -84,17 +86,30 @@ class Room {
   resetSkillReady() {
     this.skillReadySet.clear();
   }
+
   setSkillReady(socketId: string) {
     this.skillReadySet.add(socketId);
   }
+
   getSkillReadyCount(): number {
     return this.skillReadySet.size;
   }
+
   getTotalPlayerCount(): number {
     return this.players.size;
   }
+
   isAllSkillReady(): boolean {
     return this.skillReadySet.size === this.players.size;
+  }
+
+  // 🎯 게임 끝나고 나간 사람 기록용
+  markPlayerExited(socketId: string): void {
+    this.exitedPlayers.add(socketId);
+  }
+
+  areAllPlayersExited(): boolean {
+    return this.exitedPlayers.size === this.players.size;
   }
 }
 
