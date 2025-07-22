@@ -1,20 +1,21 @@
-// server/games/skills/bumpercar.js
-const Skill = require('../Skill');
+import { Skill } from '../Skill';
+import Player from '../player';
+import * as GAME_CONSTANTS from '../../constants/constants';
 
-class bumpercar extends Skill {
-  constructor(owner) {
+export default class Bumpercar extends Skill {
+  used: boolean;
+  constructor(owner: Player) {
     super(owner);
     this.name = 'bumpercar';
     this.description = '범퍼카 재생! 다른 사람 commit 게이지 절반으로. 1회 사용.';
     this.used = false;
   }
 
-  execute(allPlayers) {
+  execute(allPlayers: Player[]): void {
     if (this.used) return;
     this.owner.bumpercar = true;
     this.used = true;
     this.onUse();
-    // 프런트에 bumpercar 상태 진입 알림 (애니메이션/사운드 재생)
     if (this.owner.game && this.owner.game.broadcast) {
       this.owner.game.broadcast('skillEffect', {
         type: 'bumpercar',
@@ -22,7 +23,6 @@ class bumpercar extends Skill {
         duration: 3000
       });
     }
-    // 3초 후 효과 적용
     setTimeout(() => {
       if (this.owner.isAlive) {
         allPlayers.forEach(p => {
@@ -40,6 +40,4 @@ class bumpercar extends Skill {
       }
     }, 3000);
   }
-}
-
-module.exports = bumpercar;
+} 

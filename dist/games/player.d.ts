@@ -28,6 +28,7 @@ declare class Player {
     hasCaffeine: boolean;
     muscleGauge: number;
     muscleCount: number;
+    game?: any;
     constructor(socketId: string, username: string);
     getInfo(): PlayerInfo;
 }

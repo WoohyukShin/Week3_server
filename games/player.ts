@@ -36,6 +36,7 @@ class Player {
   hasCaffeine: boolean; // 커피 마심
   muscleGauge: number; // 운동 게이지
   muscleCount: number; // 근육량
+  game?: any; // skills에서 game 프로퍼티 접근을 위한 타입 선언
 
   constructor(socketId: string, username: string) {
     this.socketId = socketId;
