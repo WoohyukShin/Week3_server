@@ -16,5 +16,9 @@ export default class Shotgun extends Skill {
     this.usesLeft--;
     this.onUse();
     this.owner.playerMotion = 'shotgun';
+    // SFX 재생 신호
+    if (this.owner.game && this.owner.game.broadcast) {
+      this.owner.game.broadcast('playSkillSfx', { type: 'shotgun' });
+    }
   }
 } 

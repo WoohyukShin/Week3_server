@@ -90,7 +90,7 @@ class Game {
     } else if (player.playerMotion === 'gaming') { // gaming일 때 몰입 게이지 덜 증가
       player.flowGauge = Math.min(GAME_CONSTANTS.MAX_FLOW_GAUGE, player.flowGauge + 
         GAME_CONSTANTS.FLOW_GAUGE_INCREASE_PER_TICK * GAME_CONSTANTS.GAME_FLOW_GAUGE_RATE);
-    } else if ((player as any).isFlowProtedted || player.playerMotion !== 'coding') {
+    } else if ((player as any).isFlowProtected || player.playerMotion !== 'coding') {
       return; // 커피 버프 중 or 운동, 노래 부를 때는 몰입 게이지 변화 없음
     } else {
       player.flowGauge = Math.max(0, player.flowGauge - GAME_CONSTANTS.FLOW_GAUGE_DECREASE_PER_TICK);

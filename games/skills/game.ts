@@ -15,6 +15,10 @@ export default class GameSkill extends Skill {
   execute(): void {
     if (this.usesLeft <= 0) return;
     (this.owner as any).playingGame = true;
+    // SFX 재생 신호
+    if (this.owner.game && this.owner.game.broadcast) {
+      this.owner.game.broadcast('playSkillSfx', { type: 'game' });
+    }
     setTimeout(() => {
       (this.owner as any).playingGame = false;
     }, GAME_CONSTANTS.GAME_TIME_MS);

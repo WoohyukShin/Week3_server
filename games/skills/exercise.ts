@@ -13,6 +13,10 @@ export default class Exercise extends Skill {
   execute(): void {
     this.onUse();
     this.owner.playerMotion = 'exercise';
+    // SFX 재생 신호
+    if (this.owner.game && this.owner.game.broadcast) {
+      this.owner.game.broadcast('playSkillSfx', { type: 'exercise' });
+    }
     setTimeout(() => {
       if (this.owner.isAlive) {
         this.owner.playerMotion = 'coding';
