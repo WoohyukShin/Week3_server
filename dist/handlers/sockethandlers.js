@@ -46,6 +46,13 @@ exports.default = (io) => {
                 const room = roomManager.getRoom(roomId);
                 if (room && room.game) {
                     room.game.handlePlayerAction(socket.id, data.action, data.payload);
+                    // Dancing 사운드 브로드캐스트
+                    if (data.action === 'startDancing') {
+                        io.to(roomId).emit('playDanceBgm', { danceType: data.payload?.danceType || 'default' });
+                    }
+                    else if (data.action === 'stopDancing') {
+                        io.to(roomId).emit('stopDanceBgm', { danceType: data.payload?.danceType || 'default' });
+                    }
                     socket.to(roomId).emit('playerAction', {
                         socketId: socket.id,
                         action: data.action,

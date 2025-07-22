@@ -16,9 +16,8 @@ class Shotgun extends Skill_1.Skill {
         this.onUse();
         this.owner.playerMotion = 'shotgun';
         // SFX 재생 신호
-        if (this.owner.game && this.owner.game.broadcast) {
-            this.owner.game.broadcast('playSkillSfx', { type: 'shotgun' });
-        }
+        console.log('[DEBUG] 서버에서 playSkillSfx broadcast: shotgun');
+        this.owner.game.broadcast('playSkillSfx', { type: 'shotgun' });
     }
 }
 exports.default = Shotgun;

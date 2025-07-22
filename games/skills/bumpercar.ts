@@ -16,9 +16,8 @@ export default class Bumpercar extends Skill {
     this.owner.playerMotion = 'bumpercar';
     this.used = true;
     // SFX 재생 신호
-    if (this.owner.game && this.owner.game.broadcast) {
-      this.owner.game.broadcast('playSkillSfx', { type: 'bumpercar' });
-    }
+    console.log('[DEBUG] 서버에서 playSkillSfx broadcast: bumpercar');
+    this.owner.game.broadcast('playSkillSfx', { type: 'bumpercar' });
     this.onUse();
     setTimeout(() => {
       if (this.owner.isAlive) {

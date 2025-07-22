@@ -46,9 +46,8 @@ class Exercise extends Skill_1.Skill {
         this.onUse();
         this.owner.playerMotion = 'exercise';
         // SFX 재생 신호
-        if (this.owner.game && this.owner.game.broadcast) {
-            this.owner.game.broadcast('playSkillSfx', { type: 'exercise' });
-        }
+        console.log('[DEBUG] 서버에서 playSkillSfx broadcast: exercise');
+        this.owner.game.broadcast('playSkillSfx', { type: 'exercise' });
         setTimeout(() => {
             if (this.owner.isAlive) {
                 this.owner.playerMotion = 'coding';
