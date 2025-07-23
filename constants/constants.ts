@@ -18,7 +18,7 @@ export const FLOW_GAUGE_INCREASE_PER_TICK: number = FLOW_GAUGE_INCREASE_PER_SECO
 export const MANAGER_APPEARANCE_PROBABILITY: number = 0.015; // 매 틱마다 운영진이 등장할 확률 1.5%
 
 // 모션 시간
-export const MANAGER_KILL_DELAY_MS = 1000; // 운영진 모션 시간
+export const MANAGER_KILL_DELAY_MS = 900; // 운영진 모션 시간
 export const PUSH_ANIMATION_DURATION_MS = 500; // PUSH 모션 시간
 
 // 스킬 밸런스
@@ -29,7 +29,7 @@ export const SHOTGUN_COOLDOWN_MS: number = 5000; // 샷건 쿨타임
 
 export const EXERCISE_COOLDOWN_MS: number = 3000; // 운동 쿨타임
 export const EXERCISE_TIME_MS: number = 2000; // 운동 시간
-export const MUSCLE_TO_WIN: number = 5; // 운동 승리 조건 달성 근육량
+export const MUSCLE_TO_WIN: number = 3; // 운동 승리 조건 달성 근육량
 
 export const GAME_COOLDOWN_MS: number = 10000; // 게임 쿨타임
 export const GAME_FLOW_GAUGE_RATE: number = 0.7; // 게임 스킬 사용 시 몰입 게이지 증가량 비율

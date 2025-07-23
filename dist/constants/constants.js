@@ -16,7 +16,7 @@ exports.FLOW_GAUGE_INCREASE_PER_TICK = exports.FLOW_GAUGE_INCREASE_PER_SECOND / 
 // '운영진' Event
 exports.MANAGER_APPEARANCE_PROBABILITY = 0.015; // 매 틱마다 운영진이 등장할 확률 1.5%
 // 모션 시간
-exports.MANAGER_KILL_DELAY_MS = 1000; // 운영진 모션 시간
+exports.MANAGER_KILL_DELAY_MS = 900; // 운영진 모션 시간
 exports.PUSH_ANIMATION_DURATION_MS = 500; // PUSH 모션 시간
 // 스킬 밸런스
 exports.BUMPERCAR_FLOW_GAUGE_DECREASE_RATE = 0.7; // 범퍼카 스킬 사용 성공 시 몰입 게이지 감소 비율
@@ -24,7 +24,7 @@ exports.BUMPERCAR_TIME_MS = 3000; // 노래 부르는 시간
 exports.SHOTGUN_COOLDOWN_MS = 5000; // 샷건 쿨타임
 exports.EXERCISE_COOLDOWN_MS = 3000; // 운동 쿨타임
 exports.EXERCISE_TIME_MS = 2000; // 운동 시간
-exports.MUSCLE_TO_WIN = 5; // 운동 승리 조건 달성 근육량
+exports.MUSCLE_TO_WIN = 3; // 운동 승리 조건 달성 근육량
 exports.GAME_COOLDOWN_MS = 10000; // 게임 쿨타임
 exports.GAME_FLOW_GAUGE_RATE = 0.7; // 게임 스킬 사용 시 몰입 게이지 증가량 비율
 exports.GAME_TIME_MS = 3000; // 게임 시간

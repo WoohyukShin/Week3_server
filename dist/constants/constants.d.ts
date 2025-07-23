@@ -9,7 +9,7 @@ export declare const FLOW_GAUGE_DECREASE_PER_TICK: number;
 export declare const FLOW_GAUGE_INCREASE_PER_SECOND: number;
 export declare const FLOW_GAUGE_INCREASE_PER_TICK: number;
 export declare const MANAGER_APPEARANCE_PROBABILITY: number;
-export declare const MANAGER_KILL_DELAY_MS = 1000;
+export declare const MANAGER_KILL_DELAY_MS = 900;
 export declare const PUSH_ANIMATION_DURATION_MS = 500;
 export declare const BUMPERCAR_FLOW_GAUGE_DECREASE_RATE: number;
 export declare const BUMPERCAR_TIME_MS: number;

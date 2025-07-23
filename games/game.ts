@@ -34,10 +34,10 @@ class Game {
 
   start(): void {
     console.log(`🎮 Game.start() called for room: ${this.roomId}`);
-    this.players.forEach(player => {
-      // 랜덤 스킬 할당
-      const skillInstance = SkillManager.assignRandomSkill(player, this);
-      player.skill = skillInstance;
+    // 모든 플레이어에게 중복 없이 스킬 배정
+    const assignedSkills = SkillManager.assignUniqueSkills(this.players, this);
+    this.players.forEach((player, idx) => {
+      player.skill = assignedSkills[idx];
       this.io.to(player.socketId).emit('skillAssigned', { skill: player.skill ? player.skill.name : null });
       console.log(`[Game.start] skillAssigned sent to ${player.username} (${player.socketId}):`, player.skill ? player.skill.name : null);
     });
