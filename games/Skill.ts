@@ -22,12 +22,16 @@ abstract class Skill {
     this.lastUsed = 0;
   }
 
+  get isCooldown(): boolean {
+    return Date.now() - this.lastUsed < this.cooldown;
+  }
+
   /**
    * 스킬을 사용할 수 있는지 확인합니다.
    * @returns {boolean}
    */
   canUse(): boolean {
-    return Date.now() - this.lastUsed > this.cooldown * 1000;
+    return !this.isCooldown;
   }
 
   /**

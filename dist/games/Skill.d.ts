@@ -12,6 +12,7 @@ declare abstract class Skill {
      * @param {Game} game - 게임 인스턴스
      */
     constructor(owner: Player, game: Game);
+    get isCooldown(): boolean;
     /**
      * 스킬을 사용할 수 있는지 확인합니다.
      * @returns {boolean}

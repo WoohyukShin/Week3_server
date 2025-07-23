@@ -40,9 +40,11 @@ class Exercise extends Skill_1.Skill {
         super(owner, game);
         this.name = 'exercise';
         this.description = '운동을 시작함. 3초 동안 운동에 성공하면 근육량이 오름. 근육량이 꽉 차면 게임을 승리함.';
-        this.cooldown = 3;
+        this.cooldown = GAME_CONSTANTS.EXERCISE_COOLDOWN_MS;
     }
     execute() {
+        if (this.isCooldown)
+            return;
         this.onUse();
         this.owner.playerMotion = 'exercise';
         // SFX 재생 신호

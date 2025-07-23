@@ -14,12 +14,15 @@ class Skill {
         this.cooldown = 0;
         this.lastUsed = 0;
     }
+    get isCooldown() {
+        return Date.now() - this.lastUsed < this.cooldown;
+    }
     /**
      * 스킬을 사용할 수 있는지 확인합니다.
      * @returns {boolean}
      */
     canUse() {
-        return Date.now() - this.lastUsed > this.cooldown * 1000;
+        return !this.isCooldown;
     }
     // 스킬 사용 후 호출
     onUse() {

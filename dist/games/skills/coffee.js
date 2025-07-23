@@ -40,9 +40,11 @@ class Coffee extends Skill_1.Skill {
         super(owner, game);
         this.name = 'coffee';
         this.description = '5초간 몰입 게이지 감소 없음';
-        this.cooldown = 15;
+        this.cooldown = GAME_CONSTANTS.COFFEE_COOLDOWN_MS + GAME_CONSTANTS.CAFFEINE_BUFF_DURATION_MS;
     }
     execute() {
+        if (this.isCooldown)
+            return;
         this.onUse();
         this.owner.playerMotion = 'coffee';
         // SFX 재생 신호

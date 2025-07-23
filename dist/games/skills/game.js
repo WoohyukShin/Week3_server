@@ -40,10 +40,12 @@ class GameSkill extends Skill_1.Skill {
         super(owner, game);
         this.name = 'game';
         this.description = '미연시 플레이로 몰입 증가. 운영진 있어도 안전. 최대 3회.';
-        this.cooldown = 10;
+        this.cooldown = GAME_CONSTANTS.GAME_COOLDOWN_MS + GAME_CONSTANTS.GAME_TIME_MS;
         this.usesLeft = 3;
     }
     execute() {
+        if (this.isCooldown)
+            return;
         if (this.usesLeft <= 0)
             return;
         this.owner.playerMotion = 'gaming';
