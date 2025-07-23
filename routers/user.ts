@@ -46,6 +46,16 @@ router.get('/check-nickname/:nickname', async (req: Request, res: Response) => {
 // POST /api/users/register - 회원가입
 router.post('/register', async (req: Request, res: Response) => {
   const { username, password, nickname } = req.body;
+  // 프론트에서 명확한 에러 메시지 구분을 위해 직접 유효성 검사
+  if (!username || username.length < 3) {
+    return res.status(400).json({ message: '사용자명은 최소 3자 이상이어야 합니다.' });
+  }
+  if (!password || password.length < 6) {
+    return res.status(400).json({ message: '비밀번호는 최소 6자 이상이어야 합니다.' });
+  }
+  if (!nickname || nickname.length < 2) {
+    return res.status(400).json({ message: '닉네임은 최소 2자 이상이어야 합니다.' });
+  }
   try {
     // 중복 확인
     const existingUsername = await User.findOne({ username });
