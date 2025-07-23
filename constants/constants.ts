@@ -15,7 +15,7 @@ export const FLOW_GAUGE_INCREASE_PER_SECOND: number = 20; // 춤 출때 초당 �
 export const FLOW_GAUGE_INCREASE_PER_TICK: number = FLOW_GAUGE_INCREASE_PER_SECOND / TICKS_PER_SECOND;
 
 // '운영진' Event
-export const MANAGER_APPEARANCE_PROBABILITY: number = 0.03; // 매 틱마다 운영진이 등장할 확률 3%
+export const MANAGER_APPEARANCE_PROBABILITY: number = 0.015; // 매 틱마다 운영진이 등장할 확률 1.5%
 
 // 모션 시간
 export const MANAGER_KILL_DELAY_MS = 1000; // 운영진 모션 시간

@@ -14,7 +14,7 @@ exports.FLOW_GAUGE_DECREASE_PER_TICK = exports.FLOW_GAUGE_DECREASE_PER_SECOND / 
 exports.FLOW_GAUGE_INCREASE_PER_SECOND = 20; // 춤 출때 초당 몰입 게이지 증가량
 exports.FLOW_GAUGE_INCREASE_PER_TICK = exports.FLOW_GAUGE_INCREASE_PER_SECOND / exports.TICKS_PER_SECOND;
 // '운영진' Event
-exports.MANAGER_APPEARANCE_PROBABILITY = 0.03; // 매 틱마다 운영진이 등장할 확률 3%
+exports.MANAGER_APPEARANCE_PROBABILITY = 0.015; // 매 틱마다 운영진이 등장할 확률 1.5%
 // 모션 시간
 exports.MANAGER_KILL_DELAY_MS = 1000; // 운영진 모션 시간
 exports.PUSH_ANIMATION_DURATION_MS = 500; // PUSH 모션 시간
