@@ -74,6 +74,7 @@ exports.default = (io) => {
                     if (room.gameReadySet.size === room.players.size) {
                         room.startGame(io);
                         io.to(roomId).emit('gameStarted', room.getState());
+                        roomManager.broadcastRoomList();
                         room.players.forEach(player => {
                             io.to(player.socketId).emit('setLocalPlayer', player.socketId);
                         });
@@ -157,6 +158,7 @@ exports.default = (io) => {
                     room.exitedPlayers.add(socket.id);
                     if (room.exitedPlayers.size === room.players.size) {
                         roomManager.rooms.delete(roomId);
+                        roomManager.broadcastRoomList();
                         console.log(`[${roomId}] Room deleted after all players exited`);
                     }
                 }

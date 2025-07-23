@@ -40,7 +40,7 @@ export class RoomManager {
     
     // 방에 있는 모든 사람에게 새로운 플레이어 정보 전파
     this.io.to(roomId).emit('playerJoined', room.getState());
-
+    this.broadcastRoomList(); // 입장 시에도 전체 갱신
     return room;
   }
 
